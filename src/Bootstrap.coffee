@@ -5,7 +5,9 @@ class Bootstrap
   path = require 'path'
   cheerio = require 'cheerio'
   Utils = require './Utils'
+  Logger = require './Logger'
   App = require './App'
+
 
   constructor: ->
     @paths =
@@ -13,11 +15,14 @@ class Bootstrap
       attachmentsExportPath: "/public/assets/images/"
       markdownImageReference: "assets/images/"
 
+
   run: ->
     @getPaths()
-    utils = new Utils fs, path
-    app = new App fs, exec, path, cheerio, utils
+    logger = new Logger Logger.INFO
+    utils = new Utils fs, path, logger
+    app = new App fs, exec, path, cheerio, utils, logger
     app.convert @paths.divePath
+
 
   getPaths: ->
     process.argv.forEach (val, index, array) =>

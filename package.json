@@ -1,11 +1,15 @@
 {
   "name": "confluence-to-markdown",
-  "version": "1.1.1",
+  "version": "1.1.2",
+  "author": "Martin Lukes",
+  "contributors": [{"name": "Eric White"}],
+  "license": "MIT",
   "description": "Convert Confluence Pages to Markdown",
+  "keywords": ["Confluence", "Markdown", "Confluence to Markdown"],
   "bin": {
-    "confluence-to-markdown": "./index.coffee"
+    "confluence-to-markdown": "./src/index.coffee"
   },
-  "main": "index.coffee",
+  "main": "src/index.coffee",
   "repository": "git@github.com:meridius/confluence-to-markdown.git",
   "dependencies": {
     "cheerio": "^0.22.0",
@@ -16,13 +20,5 @@
   },
   "devDependencies": {
 
-  },
-  "keywords": [
-    "Confluence",
-    "Markdown",
-    "Confluence to Markdown"
-  ],
-  "author": "Martin Lukes",
-  "contributors": [{"name": "Eric White"}],
-  "license": "MIT"
+  }
 }

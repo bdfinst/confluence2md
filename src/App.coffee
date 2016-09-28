@@ -1,11 +1,11 @@
 class App
 
-  ###
-  htmlFileList list of files with .html extension (original files)
+  ###*
+  # htmlFileList list of files with .html extension (original files)
   ###
   HTML_FILE_LIST = [];
 
-  constructor: (@fs, @exec, @path, @cheerio, @utils) ->
+  constructor: (@fs, @exec, @path, @cheerio, @utils, @logger) ->
     @options =
       pandocOutputType: "markdown_github+blank_before_header"
       pandocOptions: "--atx-headers"
@@ -16,8 +16,8 @@ class App
     @dive dir
 
 
-  ###
-  fills the HTML_FILE_LIST constant
+  ###*
+  # fills the HTML_FILE_LIST constant
   ###
   getAllHtmlFileNames: (dir) ->
     list = @fs.readdirSync dir
@@ -28,11 +28,11 @@ class App
       if fileStat && fileStat.isDirectory()
         @getAllHtmlFileNames fullPath
       else if file.endsWith '.html'
-        HTML_FILE_LIST.push file #TODO funguje to?
+        HTML_FILE_LIST.push file #TODO is it working?
 
 
   dive: (dir) ->
-    console.log "Reading the directory: " + dir
+    @logger.info "Reading the directory: " + dir
     list = @fs.readdirSync dir
     list.forEach (file) =>
       fullPath = dir + "/" + file
@@ -42,20 +42,20 @@ class App
         @dive fullPath
       else
         if not file.endsWith '.html'
-          console.log 'Skipping non-html file: ' + file
+          @logger.debug 'Skipping non-html file: ' + file
           return
         @parseFile fullPath
 
 
   parseFile: (fullPath) ->
-    console.log 'Parsing file: ' + fullPath
+    @logger.info 'Parsing file: ' + fullPath
     text = @prepareContent fullPath
     extName = @path.extname fullPath
     markdownFileName = @path.basename(fullPath, extName) + '.md'
 
-    console.log "Making Markdown ..."
+    @logger.info "Making Markdown ..."
     outputFile = @writeMarkdownFile text, markdownFileName
-    console.log "done"
+    @logger.info "done"
 
 
   writeMarkdownFile: (text, markdownFileName) ->
@@ -92,9 +92,9 @@ class App
       .html();
     content = @fixLinks content
 
-    console.log "Relinking images ..."
-#    @relinkImagesInFile outputFile, attachmentsExportPath, markdownImageReference #TODO atributy
-    console.log "done"
+    @logger.info "Relinking images ..."
+#    @relinkImagesInFile outputFile, attachmentsExportPath, markdownImageReference #TODO attributes
+    @logger.info "done"
 
     content
 
@@ -112,8 +112,8 @@ class App
     text
 
 
-  ###
-  TODO
+  ###*
+  # TODO
   ###
   relinkImagesInFile: (outputFile, attachmentsExportPath, markdownImageReference) ->
     text = @fs.readFileSync outputFile, 'utf8'
@@ -127,9 +127,9 @@ class App
       if attachments == imgTag
         return
       fileName = attachmentsExportPath + attachments
-      console.log "Creating image dir: " + fileName.substr(0, fileName.lastIndexOf('/'))
+      @logger.info "Creating image dir: " + fileName.substr(0, fileName.lastIndexOf('/'))
       @utils.mkdirpSync fileName.substr(0, fileName.lastIndexOf('/'))
-      console.log "Creating filename: " + fileName
+      @logger.info "Creating filename: " + fileName
       try
         @fs.accessSync dir + "/" + imgTag, @fs.F_OK
         @fs.createReadStream dir + "/" + imgTag
@@ -138,9 +138,9 @@ class App
               process.cwd() + "/" + fileName
             )
           )
-        console.log "Wrote: " + dir + "/" + imgTag + "\n To: " + process.cwd() + "/" + fileName
+        @logger.info "Wrote: " + dir + "/" + imgTag + "\n To: " + process.cwd() + "/" + fileName
       catch e
-        console.log "Can't read: " + dir + "/" + imgTag
+        @logger.error "Can't read: " + dir + "/" + imgTag
     lines = text.replace(
       /(<img src=")([a-z||_|0-9|.|]+)\/([a-z||_|0-9|.|]+)\/([a-z||_|0-9|.|]+)/ig,
       "$1" + markdownImageReference + "$3/$4"

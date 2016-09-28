@@ -1,5 +1,6 @@
 class Utils
-  constructor: (@fs, @path) ->
+
+  constructor: (@fs, @path, @logger) ->
 
 
   getPageTitle: (content) ->
@@ -23,7 +24,7 @@ class Utils
 
 
   mkdirpSync: (dirpath) ->
-    console.log "Making : " + dirpath
+    @logger.info "Making: " + dirpath
     parts = dirpath.split @path.sep
 
     @mkdirSync @path.join.apply(
