@@ -1,106 +1,223 @@
 #!/usr/bin/env node
-var fs = require('fs')
-var child_process = require('child_process')
-var exec = require('sync-exec')
-var path = require('path');
 
-var divePath = process.cwd();
-var attachmentsExportPath = "/public/assets/images/"
-var markdownImageReference = "assets/images/"
+const REQUIRED = {
+  fs: require('fs'),
+  path: require('path'),
+  exec: require('sync-exec'),
+  path: require('path'),
+  cheerio: require('cheerio')
+}
+
+/* htmlFileList list of files with .html extension (original files) */
+const HTML_FILE_LIST = []
+
+var paths = {
+  divePath: process.cwd(),
+  attachmentsExportPath: "/public/assets/images/",
+  markdownImageReference: "assets/images/"
+}
+
+var options = {
+  pandocOutputType: "markdown_github+blank_before_header",
+  pandocOptions: "--atx-headers"
+}
+
 // print process.argv
 process.argv.forEach(function (val, index, array) {
-  if (index === 2){
-    divePath = process.cwd() + "/" + val;
-  }else if (index === 3){
-    attachmentsExportPath = val
-  }else if(index === 4){
-    markdownImageReference = val
+  if (index === 2) {
+    paths.divePath = process.cwd() + "/" + val;
+  } else if (index === 3) {
+    paths.attachmentsExportPath = val
+  } else if(index === 4) {
+    paths.markdownImageReference = val
   }
 });
-console.log("TEST")
-dive(divePath)
 
-function dive(dir) {
+
+getAllHtmlFileNames(paths.divePath)
+dive(paths.divePath)
+
+
+/**
+* fills the HTML_FILE_LIST constant
+*/
+function getAllHtmlFileNames(dir) {
   var list = []
-  var stat = ""
-    // Read the directory
-  list = fs.readdirSync(dir);
+  list = REQUIRED.fs.readdirSync(dir);
   list.forEach(function (file) {
-    // Full path of that file
-    var path = dir + "/" + file
+    var fullPath = dir + "/" + file
+    var fileStat = REQUIRED.fs.statSync(fullPath)
 
-    // Get the file's stats
-    stat = fs.statSync(path)
-
-    // If the file is a directory
-    if (stat && stat.isDirectory()) {
-      dive(path);
+    if (fileStat && fileStat.isDirectory()) {
+      getAllHtmlFileNames(fullPath);
     } else {
-      console.log(file)
       if (file.endsWith('.html')) {
-        var titleRegex = /<title>(?:Blue Planet : |)([a-z|\s|\-|\(|\)]+)+<\/title>/i
-        var content = fs.readFileSync(path, 'utf8')
-        var match = content.match(titleRegex)
-        if (match != null && match.length > 1) {
-          //          console.log(match[1])
-          mkdirpSync("/Markdown")
-//          console.log("Making Markdown")
-          var outputFile = "Markdown/" + match[1].replace(/ /g, "-").replace(/[(|)]/g, "") + ".md"
-          var out = exec("pandoc -f html -t markdown_github -o " + outputFile + " " + JSON.stringify(path.replace(/ /g, "\ ")), {cwd: process.cwd()})
-          console.log(out)
-            //images
-          console.log("Reading : " + outputFile)
-          var content = fs.readFileSync(outputFile, 'utf8')
-            //          console.log("Done Reading")
-          var matches = uniq(content.match(/(<img src=")([a-z||_|0-9|.|]+)\/([a-z||_|0-9|.|]+)\/([a-z||_|0-9|.|]+)/ig))
-          matches.forEach(function (img) {
-            img = img.replace('<img src="', '')
-            var attachments = img.replace("attachments/", "");
-            if (attachments == img) {
-              return;
-            }
-            var fileName = attachmentsExportPath + attachments;
-            //            console.log("Creating Folder : " + fileName.substr(0, fileName.lastIndexOf('/')))
-            mkdirpSync(fileName.substr(0, fileName.lastIndexOf('/')))
-              //            console.log("creating filename: " + fileName)
-              //            fs.createReadStream(img).pipe(fs.createWriteStream(fileName));
-            try {
-//              var img_content = fs.readFileSync(dir + "/" + img);
-//              fs.writeFileSync(fileName, img);
-              fs.accessSync(dir + "/" + img, fs.F_OK);
-              fs.createReadStream(dir + "/" + img).pipe(fs.createWriteStream(process.cwd() + "/" + fileName));
-              console.log("Wrote: " + dir + "/" + img + "\n To: " + process.cwd() + "/" + fileName)
-            } catch (e) {
-              console.log("Can't read: " + dir + "/" + img)
-            }
-          })
-          var lines = content.replace(/(<img src=")([a-z||_|0-9|.|]+)\/([a-z||_|0-9|.|]+)\/([a-z||_|0-9|.|]+)/ig, "$1"+ markdownImageReference +"$3/$4")
-
-          fs.writeFileSync(outputFile, lines)
-        }
+        HTML_FILE_LIST.push(file)
       }
-
-
     }
   })
 }
+
+
+function dive(dir) {
+  var list = []
+  console.log("Reading the directory: " + dir)
+  list = REQUIRED.fs.readdirSync(dir);
+  list.forEach(function (file) {
+    var fullPath = dir + "/" + file
+    var fileStat = REQUIRED.fs.statSync(fullPath)
+
+    if (fileStat && fileStat.isDirectory()) {
+      dive(fullPath);
+    } else {
+      if (!file.endsWith('.html')) {
+        console.log('Skipping non-html file: ' + file)
+        return;
+      }
+      parseFile(fullPath);
+    }
+  })
+}
+
+
+function parseFile(fullPath) {
+  console.log('Parsing file: ' + fullPath)
+  var text = prepareContent(fullPath)
+  var extName = REQUIRED.path.extname(fullPath)
+  var markdownFileName = REQUIRED.path.basename(fullPath, extName) + '.md'
+
+  console.log("Making Markdown ...")
+  var outputFile = writeMarkdownFile(text, markdownFileName)
+  console.log("done")
+}
+
+
+function writeMarkdownFile(text, markdownFileName) {
+  mkdirpSync("/Markdown")
+  var outputFileName = "Markdown/" + markdownFileName
+  var inputFile = outputFileName + "~"
+  REQUIRED.fs.writeFileSync(inputFile, text)
+  var out = REQUIRED.exec("pandoc -f html -t " 
+    + options.pandocOutputType + " " 
+    + options.pandocOptions 
+    + " -o " + outputFileName 
+    + " " + inputFile, 
+    {cwd: process.cwd()}
+  )
+  REQUIRED.fs.unlink(inputFile)
+
+  return outputFileName
+}
+
+
+function prepareContent(fullPath) {
+  var fileText = REQUIRED.fs.readFileSync(fullPath, 'utf8')
+  var $ = REQUIRED.cheerio.load(fileText)
+  var $content = (REQUIRED.path.basename(fullPath) == 'index.html')
+    ? $('#content')
+    : $('#main-content')
+  var content = $content
+    .find('span.mw-headline').each(function(i, el) {
+      $(this).replaceWith(
+        $(this).text()
+      );
+    }).end()
+    .find('span.aui-icon').each(function(i, el) {
+      $(this).replaceWith(
+        $(this).text()
+      );
+    }).end()
+    .html()
+  content = fixLinks(content)
+  
+  console.log("Relinking images ...")
+  relinkImagesInFile(outputFile)
+  console.log("done")
+
+  return content
+}
+
+
+function fixLinks(content) {
+  var $ = REQUIRED.cheerio.load(content)
+  var text = $('a')
+    .each(function(i, el) {
+      var oldLink = $(this).attr('href')
+      if (HTML_FILE_LIST.indexOf(oldLink) > -1) {
+        var newLink = REQUIRED.path.basename(oldLink, '.html') + '.md'
+        $(this).attr('href', newLink);
+      }
+    }).end()
+    .html()
+
+  return text
+}
+
+
+function relinkImagesInFile(outputFile) {
+  var text = REQUIRED.fs.readFileSync(outputFile, 'utf8')
+  var matches = uniq(text.match(/(<img src=")([a-z||_|0-9|.|]+)\/([a-z||_|0-9|.|]+)\/([a-z||_|0-9|.|]+)/ig))
+  var dir = '' // TODO parent directory of outputFile
+  matches.forEach(function (imgTag) {
+    imgTag = imgTag.replace('<img src="', '')
+    var attachments = imgTag.replace("attachments/", "");
+    if (attachments == imgTag) {
+      return;
+    }
+    var fileName = paths.attachmentsExportPath + attachments;
+    console.log("Creating image dir: " + fileName.substr(0, fileName.lastIndexOf('/')))
+    mkdirpSync(fileName.substr(0, fileName.lastIndexOf('/')))
+    console.log("Creating filename: " + fileName)
+//              REQUIRED.fs.createReadStream(imgTag).pipe(REQUIRED.fs.createWriteStream(fileName));
+    try {
+//              var img_content = REQUIRED.fs.readFileSync(dir + "/" + imgTag);
+//              REQUIRED.fs.writeFileSync(fileName, imgTag);
+      REQUIRED.fs.accessSync(dir + "/" + imgTag, REQUIRED.fs.F_OK);
+      REQUIRED.fs.createReadStream(dir + "/" + imgTag)
+        .pipe(
+          REQUIRED.fs.createWriteStream(
+            process.cwd() + "/" + fileName
+          )
+        );
+      console.log("Wrote: " + dir + "/" + imgTag + "\n To: " + process.cwd() + "/" + fileName)
+    } catch (e) {
+      console.log("Can't read: " + dir + "/" + imgTag)
+    }
+  })
+  var lines = text.replace(/(<img src=")([a-z||_|0-9|.|]+)\/([a-z||_|0-9|.|]+)\/([a-z||_|0-9|.|]+)/ig, "$1"+ paths.markdownImageReference +"$3/$4")
+
+  REQUIRED.fs.writeFileSync(outputFile, lines)
+}
+
 
 function uniq(a) {
   return Array.from(new Set(a));
 }
 
+
 function mkdirSync(path) {
   try {
-    fs.mkdirSync(path);
+    REQUIRED.fs.mkdirSync(path);
   } catch (e) {
     if (e.code != 'EEXIST') throw e;
   }
 }
 
+
 function mkdirpSync(dirpath) {
-//  console.log("Making : " + dirpath)
-  var parts = dirpath.split(path.sep);
+  console.log("Making : " + dirpath)
+  var parts = dirpath.split(REQUIRED.path.sep);
   for (var i = 1; i <= parts.length; i++) {
-    mkdirSync(path.join.apply(null, parts.slice(0, i)));
+    mkdirSync(REQUIRED.path.join.apply(null, parts.slice(0, i)));
   }
+}
+
+
+function getPageTitle(content) {
+  var titleRegex = /<title>(.*)<\/title>/i
+  var match = content.match(titleRegex)
+
+  return (match != null && match.length >= 1) 
+    ? match[1] 
+    : null
 }
