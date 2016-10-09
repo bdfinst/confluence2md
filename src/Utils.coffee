@@ -32,4 +32,22 @@ class Utils
     ) for el, i in parts
 
 
+  ###*
+  # fills the HTML_FILE_LIST constant
+  ###
+  getAllHtmlFileNames: (dir) ->
+    htmlFileList = []
+    list = @fs.readdirSync dir
+    list.forEach (file) =>
+      fullPath = dir + "/" + file
+      fileStat = @fs.statSync fullPath
+
+      if fileStat && fileStat.isDirectory()
+        htmlFileList.push (@getAllHtmlFileNames fullPath)...
+      else if file.endsWith '.html'
+        htmlFileList.push file
+
+    htmlFileList
+
+
 module.exports = Utils

@@ -12,23 +12,8 @@ class App
 
 
   convert: (dir) ->
-    @getAllHtmlFileNames dir
+    HTML_FILE_LIST = @utils.getAllHtmlFileNames dir
     @dive dir
-
-
-  ###*
-  # fills the HTML_FILE_LIST constant
-  ###
-  getAllHtmlFileNames: (dir) ->
-    list = @fs.readdirSync dir
-    list.forEach (file) =>
-      fullPath = dir + "/" + file
-      fileStat = @fs.statSync fullPath
-
-      if fileStat && fileStat.isDirectory()
-        @getAllHtmlFileNames fullPath
-      else if file.endsWith '.html'
-        HTML_FILE_LIST.push file #TODO is it working?
 
 
   dive: (dir) ->
