@@ -5,7 +5,7 @@ class Utils
   # @param {path} _path Required lib
   # @param {Logger} logger My lib
   ###
-  constructor: (@_fs, @_path, @_logger) ->
+  constructor: (@_fs, @_path, @logger) ->
 
 
   getPageTitle: (content) ->
@@ -22,14 +22,20 @@ class Utils
 
 
   mkdirSync: (path) ->
+    @logger.debug "Making dir: " + path
     try
       @_fs.mkdirSync path
     catch e
       throw e if e.code isnt 'EEXIST'
 
 
+  ###*
+  # Will create directory structure.
+  # @param {string} dirpath Dir structure to create (from pwd).
+  ###
   mkdirpSync: (dirpath) ->
-    @_logger.info "Making: " + dirpath
+    @logger.debug "Making dir structure: " + dirpath
+    dirpath = dirpath + @_path.sep if dirpath.slice(-1) != @_path.sep
     parts = dirpath.split @_path.sep
 
     @mkdirSync @_path.join.apply(
@@ -44,7 +50,7 @@ class Utils
     htmlFileList = []
     list = @_fs.readdirSync dir
     list.forEach (file) =>
-      fullPath = dir + "/" + file
+      fullPath = dir + @_path.sep + file
       fileStat = @_fs.statSync fullPath
 
       if fileStat && fileStat.isDirectory()

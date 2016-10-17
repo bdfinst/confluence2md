@@ -3,25 +3,26 @@ class App
   ###*
   # htmlFileList list of files with .html extension (original files)
   ###
-  HTML_FILE_LIST = [];
+#  HTML_FILE_LIST = [];
 
   ###*
   # @param {fs} _fs Required lib
   # @param {sync-exec} _exec Required lib
   # @param {path} _path Required lib
   # @param {cheerio} _cheerio Required lib
+  # @param {mkdirp} _mkdirp Required lib
   # @param {Utils} utils My lib
   # @param {Logger} logger My lib
   ###
-  constructor: (@_fs, @_exec, @_path, @_cheerio, @utils, @logger) ->
+  constructor: (@_fs, @_exec, @_path, @_cheerio, @_mkdirp, @utils, @logger) ->
     @options =
       pandocOutputType: "markdown_github+blank_before_header"
       pandocOptions: "--atx-headers"
 
 
-  convert: (dir) ->
-    HTML_FILE_LIST = @utils.getAllHtmlFileNames dir
-    @dive dir
+  convert: (@dir) ->
+#    HTML_FILE_LIST = @utils.getAllHtmlFileNames dir
+    @dive @dir
 
 
   dive: (dir) ->
@@ -51,9 +52,14 @@ class App
     @logger.info "done"
 
 
+  ###*
+  # @param {string} text Makdown content of file
+  # @param {string} markdownFileName File name of resulting file
+  ###
   writeMarkdownFile: (text, markdownFileName) ->
-    @utils.mkdirpSync "/Markdown"
-    outputFileName = "Markdown/" + markdownFileName
+    console.log @dir
+    @_mkdirp @dir + @_path.sep + "Markdown"
+    outputFileName = @dir + @_path.sep + "Markdown" + @_path.sep + markdownFileName
     inputFile = outputFileName + "~"
     @_fs.writeFileSync inputFile, text
     command =
@@ -92,17 +98,17 @@ class App
     content
 
 
-  fixLinks: (content) ->
-    $ = @_cheerio.load content
-    text = $('a').each (i, el) =>
-      oldLink = $(this).attr 'href'
-      if oldLink in HTML_FILE_LIST
-        newLink = @_path.basename(oldLink, '.html') + '.md'
-        $(this).attr 'href', newLink
-    .end()
-    .html()
-
-    text
+#  fixLinks: (content) ->
+#    $ = @_cheerio.load content
+#    text = $('a').each (i, el) =>
+#      oldLink = $(this).attr 'href'
+#      if oldLink in HTML_FILE_LIST
+#        newLink = @_path.basename(oldLink, '.html') + '.md'
+#        $(this).attr 'href', newLink
+#    .end()
+#    .html()
+#
+#    text
 
 
   ###*
@@ -121,7 +127,7 @@ class App
         return
       fileName = attachmentsExportPath + attachments
       @logger.info "Creating image dir: " + fileName.substr(0, fileName.lastIndexOf('/'))
-      @utils.mkdirpSync fileName.substr(0, fileName.lastIndexOf('/'))
+      @_mkdirp fileName.substr(0, fileName.lastIndexOf('/'))
       @logger.info "Creating filename: " + fileName
       try
         @_fs.accessSync dir + "/" + imgTag, @_fs.F_OK
