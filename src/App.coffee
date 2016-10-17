@@ -5,6 +5,14 @@ class App
   ###
   HTML_FILE_LIST = [];
 
+  ###*
+  # @param {fs} _fs Required lib
+  # @param {sync-exec} _exec Required lib
+  # @param {path} _path Required lib
+  # @param {cheerio} _cheerio Required lib
+  # @param {Utils} utils My lib
+  # @param {Logger} logger My lib
+  ###
   constructor: (@_fs, @_exec, @_path, @_cheerio, @utils, @logger) ->
     @options =
       pandocOutputType: "markdown_github+blank_before_header"

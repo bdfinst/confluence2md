@@ -1,5 +1,10 @@
 class Utils
 
+  ###*
+  # @param {fs} _fs Required lib
+  # @param {path} _path Required lib
+  # @param {Logger} logger My lib
+  ###
   constructor: (@_fs, @_path, @_logger) ->
 
 
