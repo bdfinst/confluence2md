@@ -5,7 +5,7 @@ class App
   ###
   HTML_FILE_LIST = [];
 
-  constructor: (@fs, @exec, @path, @cheerio, @utils, @logger) ->
+  constructor: (@_fs, @_exec, @_path, @_cheerio, @utils, @logger) ->
     @options =
       pandocOutputType: "markdown_github+blank_before_header"
       pandocOptions: "--atx-headers"
@@ -18,10 +18,10 @@ class App
 
   dive: (dir) ->
     @logger.info "Reading the directory: " + dir
-    list = @fs.readdirSync dir
+    list = @_fs.readdirSync dir
     list.forEach (file) =>
       fullPath = dir + "/" + file
-      fileStat = @fs.statSync fullPath
+      fileStat = @_fs.statSync fullPath
 
       if fileStat && fileStat.isDirectory()
         @dive fullPath
@@ -35,8 +35,8 @@ class App
   parseFile: (fullPath) ->
     @logger.info 'Parsing file: ' + fullPath
     text = @prepareContent fullPath
-    extName = @path.extname fullPath
-    markdownFileName = @path.basename(fullPath, extName) + '.md'
+    extName = @_path.extname fullPath
+    markdownFileName = @_path.basename(fullPath, extName) + '.md'
 
     @logger.info "Making Markdown ..."
     outputFile = @writeMarkdownFile text, markdownFileName
@@ -47,24 +47,24 @@ class App
     @utils.mkdirpSync "/Markdown"
     outputFileName = "Markdown/" + markdownFileName
     inputFile = outputFileName + "~"
-    @fs.writeFileSync inputFile, text
+    @_fs.writeFileSync inputFile, text
     command =
       "pandoc -f html -t " +
         @options.pandocOutputType + " " +
         @options.pandocOptions +
         " -o " + outputFileName +
         " " + inputFile
-    out = @exec command, {cwd: process.cwd()}
-    @fs.unlink inputFile
+    out = @_exec command, {cwd: process.cwd()}
+    @_fs.unlink inputFile
 
     outputFileName
 
 
   prepareContent: (fullPath) ->
-    fileText = @fs.readFileSync fullPath, 'utf8'
-    $ = @cheerio.load fileText
+    fileText = @_fs.readFileSync fullPath, 'utf8'
+    $ = @_cheerio.load fileText
     $content =
-      if @path.basename(fullPath) == 'index.html'
+      if @_path.basename(fullPath) == 'index.html'
       then $('#content')
       else $('#main-content')
     content = $content
@@ -75,21 +75,21 @@ class App
         $(this).replaceWith $(this).text()
       .end()
       .html();
-    content = @fixLinks content
+#    content = @fixLinks content
 
-    @logger.info "Relinking images ..."
+#    @logger.info "Relinking images ..."
 #    @relinkImagesInFile outputFile, attachmentsExportPath, markdownImageReference #TODO attributes
-    @logger.info "done"
+#    @logger.info "done"
 
     content
 
 
   fixLinks: (content) ->
-    $ = @cheerio.load content
+    $ = @_cheerio.load content
     text = $('a').each (i, el) =>
       oldLink = $(this).attr 'href'
       if oldLink in HTML_FILE_LIST
-        newLink = @path.basename(oldLink, '.html') + '.md'
+        newLink = @_path.basename(oldLink, '.html') + '.md'
         $(this).attr 'href', newLink
     .end()
     .html()
@@ -101,7 +101,7 @@ class App
   # TODO
   ###
   relinkImagesInFile: (outputFile, attachmentsExportPath, markdownImageReference) ->
-    text = @fs.readFileSync outputFile, 'utf8'
+    text = @_fs.readFileSync outputFile, 'utf8'
     matches = @utils.uniq(
       text.match(/(<img src=")([a-z||_|0-9|.|]+)\/([a-z||_|0-9|.|]+)\/([a-z||_|0-9|.|]+)/ig)
     )
@@ -116,10 +116,10 @@ class App
       @utils.mkdirpSync fileName.substr(0, fileName.lastIndexOf('/'))
       @logger.info "Creating filename: " + fileName
       try
-        @fs.accessSync dir + "/" + imgTag, @fs.F_OK
-        @fs.createReadStream dir + "/" + imgTag
+        @_fs.accessSync dir + "/" + imgTag, @_fs.F_OK
+        @_fs.createReadStream dir + "/" + imgTag
           .pipe(
-            @fs.createWriteStream(
+            @_fs.createWriteStream(
               process.cwd() + "/" + fileName
             )
           )
@@ -131,7 +131,7 @@ class App
       "$1" + markdownImageReference + "$3/$4"
     )
 
-    @fs.writeFileSync outputFile, lines
+    @_fs.writeFileSync outputFile, lines
 
 
 module.exports = App

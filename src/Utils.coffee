@@ -1,6 +1,6 @@
 class Utils
 
-  constructor: (@fs, @path, @logger) ->
+  constructor: (@_fs, @_path, @_logger) ->
 
 
   getPageTitle: (content) ->
@@ -18,16 +18,16 @@ class Utils
 
   mkdirSync: (path) ->
     try
-      @fs.mkdirSync path
+      @_fs.mkdirSync path
     catch e
       throw e if e.code isnt 'EEXIST'
 
 
   mkdirpSync: (dirpath) ->
-    @logger.info "Making: " + dirpath
-    parts = dirpath.split @path.sep
+    @_logger.info "Making: " + dirpath
+    parts = dirpath.split @_path.sep
 
-    @mkdirSync @path.join.apply(
+    @mkdirSync @_path.join.apply(
       null, parts.slice 0, i
     ) for el, i in parts
 
@@ -37,10 +37,10 @@ class Utils
   ###
   getAllHtmlFileNames: (dir) ->
     htmlFileList = []
-    list = @fs.readdirSync dir
+    list = @_fs.readdirSync dir
     list.forEach (file) =>
       fullPath = dir + "/" + file
-      fileStat = @fs.statSync fullPath
+      fileStat = @_fs.statSync fullPath
 
       if fileStat && fileStat.isDirectory()
         htmlFileList.push (@getAllHtmlFileNames fullPath)...

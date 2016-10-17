@@ -1,9 +1,10 @@
 class Bootstrap
 
-  fs = require 'fs'
-  exec = require 'sync-exec'
-  path = require 'path'
-  cheerio = require 'cheerio'
+  _fs = require 'fs'
+  _exec = require 'sync-exec'
+  _path = require 'path'
+  _cheerio = require 'cheerio'
+
   Utils = require './Utils'
   Logger = require './Logger'
   App = require './App'
@@ -19,8 +20,8 @@ class Bootstrap
   run: ->
     @getPaths()
     logger = new Logger Logger.INFO
-    utils = new Utils fs, path, logger
-    app = new App fs, exec, path, cheerio, utils, logger
+    utils = new Utils _fs, _path, logger
+    app = new App _fs, _exec, _path, _cheerio, utils, logger
     app.convert @paths.divePath
 
 

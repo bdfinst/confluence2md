@@ -1,24 +1,19 @@
 chai = require 'chai'
-expect = chai.expect
-fs = require 'fs'
-path = require 'path'
+assert = chai.assert
+
+_fs = require 'fs'
+_path = require 'path'
+
 Logger = require '../src/Logger'
 Utils = require '../src/Utils'
 
 
-describe "feature", ->
-  it "should add two numbers", ->
-    expect 2 + 2
-      .equal 4
-  it "should substract two numbers", ->
-    expect(2 - 2).equal 0
-
-
 describe 'Utils', ->
+
   it 'getAllHtmlFileNames() should return 5 file names for page1 directory', ->
     logger = new Logger Logger.INFO
-    utils = new Utils fs, path, logger
-    fullPath = path.join __dirname, 'assets/page1'
+    utils = new Utils _fs, _path, logger
+    fullPath = _path.join __dirname, 'assets/page1'
     actual = utils.getAllHtmlFileNames fullPath
     expected = [
       '9273380.html'
@@ -27,5 +22,4 @@ describe 'Utils', ->
       'Webclient_9568537.html'
       'index.html'
     ]
-    expect actual
-      .equal expected
+    assert.sameMembers actual, expected
