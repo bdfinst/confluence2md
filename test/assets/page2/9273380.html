@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>11. My article : Zprovoznění</title>
+        <link rel="stylesheet" href="styles/site.css" type="text/css" />
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+
+    <body class="theme-default aui-theme-default">
+        <div id="page">
+            <div id="main" class="aui-page-panel">
+                <div id="main-header">
+                    <div id="breadcrumb-section">
+                        <ol id="breadcrumbs">
+                            <li class="first">
+                                <span><a href="index.html">11. My article</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="My-article_9568346.html">My article</a></span>
+                            </li>
+                                                    <li>
+                                <span><a href="Webclient_9568537.html">Webclient</a></span>
+                            </li>
+                                                </ol>
+                    </div>
+                    <h1 id="title-heading" class="pagetitle">
+                                                <span id="title-text">
+                            11. My article : Zprovoznění
+                        </span>
+                    </h1>
+                </div>
+
+                <div id="content" class="view">
+                    <div class="page-metadata">
+                        
+        
+    
+        
+    
+        
+        
+            Created by <span class='author'> Some Dude</span>, last modified on 29.01.2015
+                        </div>
+                    <div id="main-content" class="wiki-content group">
+                    <h2 id="Zprovoznění-Předpoklady">Předpoklady</h2><ul><li>Linuxve prostredi (pro Windows to bude podobne, jen je potreba zohlednit trochu odlisne cesty, zrejme nebude mozne pracovat se symlink apod).</li><li>mate nainstalovaneho a funkcniho tomcata (u me verze 7.0.47)</li><li>SVN ve verzi 1.6 - javiste pouzivaji starou verzi SVNka, takze na foobarovi to hlasi, ze musite provest (nevratny) upgrade repa na novejsi verzi (foobar 1.7.13 vs repo v 1.6 – nedelat), takze lokalne nainstalovat verzi 1.6 (ja mam 1.6.17).</li><li>Do promenych prostredi pridat <span style="line-height: 1.4285715;">SOME_SERVER_URL=192.168.0.242 pripadne jina IP (zdeli Tomas Marny)</span></li></ul><h2 id="Zprovoznění-Postup">Postup</h2><ol><li>Vyzadat si aktualni build CSWC (popr. si ho stahnout z jejich Hudsonu, pokud tam mate pristup) – soubor <strong><em>ROOT.war</em></strong><em>. </em>V pripade stahnuti buildu z Hudsonu:<ol><li>prihlaste se do Hudsonu (url <a class="external-link" href="https://192.168.0.242:18443/hudson/" rel="nofollow">https://192.168.0.242:18443/hudson/</a>, uzivatel admin, heslo sdeli Tomas Marny)</li><li>stahnete si nejnovejsi build (napr. My article-trunk, ktery konkretne pripadne sdeli Tomas Marny) - soubor <strong>deploy.zip</strong> - primo v rootu zipu by mel byt ROOT.war</li></ol></li><li><strong>zastavit Tomcata</strong> (v &lt;tomcatDir&gt;/bin je skript shutdown.sh)</li><li><strong>smazat slozku</strong> &lt;tomcatDir&gt;/webapps/ROOT</li><li>ROOT.war nakopirovat do slozky &lt;tomcatDir&gt;/webapps</li><li><p><strong>upravit &lt;tomcatDir&gt;/conf/application.properties</strong> – na konec pridat tyto dva radky (pokud je tam jiz nemate):</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">webClient.security.interceptUrl.access.timeline=permitAll
+webClient.timeline.access.authenticatedOnly=false</pre>
+</div></div></li><li>nekam k sobe (napr. do slozky CSWC) si z <strong>SVNka naklonovat repo webclienta</strong>:<br/><em>svn co <a class="external-link" href="http://svn.foobar.cz/some-java/trunk/My article/WebclientPro" rel="nofollow">http://svn.foobar.cz/some-java/trunk/My article/WebclientPro</a> ./CSWC</em></li><li><strong>spustit <em>&lt;tomcatDir&gt;/bin/startup.sh</em></strong> – nastartujete Tomcata. Po chvilce byste na <a class="external-link" href="http://localhost:18080/" rel="nofollow">http://localhost:18080</a> meli videt login page CSWC. Prvni load neco trva, tak mu dejte cas. Pokud se hned nacte bila stranka, je neco spatne, mrknete do logu v <em>&lt;tomcatDir&gt;/logs</em>,<em> </em>popr. napsat javistum <em><br/></em></li><li>nahradit slozky v rozbalenem buildu aplikace v tomcatu za <strong>symlinky</strong> do stahnuteho SVN repa:<br/><em>&lt;tomcatDir&gt;/webapps/ROOT/media</em> nahradit za symlink vedouci do<em>./CSWC/src/main/webapp/media<br/></em><em>&lt;tomcatDir&gt;/webapps/ROOT/WEB-INF/jsp</em> nahradit za symlink vedouci do <em>./CSWC/src/main/webapp/WEB-INF/jsp</em><br/><em>&lt;tomcatDir&gt;/webapps/ROOT/WEB-INF/tags </em>nahradit za symlink vedouci do <em>./CSWC/src/main/webapp/WEB-INF/tags</em></li><li>pro zprovozneni plateb je treba stahnout certifikaty (dodat Tomas Marny)<ol><li>v <em>&lt;tomcatDir&gt; </em>zalozti adresar jboss</li><li>do nej zkopirovat obsah od Tomase (adresare cfg a muzo)</li><li>pridat promenou prostred<strong><em> export SOME_SERVER=&quot;&lt;tomcatDir&gt;/jboss&quot;</em></strong></li><li>restartovat tomcat</li></ol></li></ol>
+                    </div>
+
+                    
+                 
+                </div>             </div> 
+            <div id="footer" role="contentinfo">
+                <section class="footer-body">
+                    <p>Document generated by Confluence on 08.09.2016 02:05</p>
+                    <div id="footer-logo"><a href="http://www.atlassian.com/">Atlassian</a></div>
+                </section>
+            </div>
+        </div>     </body>
+</html>
