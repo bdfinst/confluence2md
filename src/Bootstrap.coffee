@@ -8,6 +8,7 @@ class Bootstrap
 
   Utils = require './Utils'
   Logger = require './Logger'
+  Formatter = require './Formatter'
   App = require './App'
 
 
@@ -22,7 +23,8 @@ class Bootstrap
     @getPaths()
     logger = new Logger Logger.INFO
     utils = new Utils _fs, _path, logger
-    app = new App _fs, _exec, _path, _cheerio, _mkdirp, utils, logger
+    formatter = new Formatter _cheerio, logger
+    app = new App _fs, _exec, _path, _mkdirp, utils, formatter, logger
     app.convert @paths.divePath
 
 

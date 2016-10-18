@@ -9,12 +9,12 @@ class App
   # @param {fs} _fs Required lib
   # @param {sync-exec} _exec Required lib
   # @param {path} _path Required lib
-  # @param {cheerio} _cheerio Required lib
   # @param {mkdirp} _mkdirp Required lib
   # @param {Utils} utils My lib
+  # @param {Formatter} formatter My lib
   # @param {Logger} logger My lib
   ###
-  constructor: (@_fs, @_exec, @_path, @_cheerio, @_mkdirp, @utils, @logger) ->
+  constructor: (@_fs, @_exec, @_path, @_mkdirp, @utils, @formatter, @logger) ->
     @options =
       pandocOutputType: "markdown_github+blank_before_header"
       pandocOptions: "--atx-headers"
@@ -96,39 +96,18 @@ class App
   ###
   prepareContent: (fullInPath) ->
     fileText = @_fs.readFileSync fullInPath, 'utf8'
-    $ = @_cheerio.load fileText
-    $content =
-      if @_path.basename(fullInPath) == 'index.html'
-      then $('#content')
-      else $('#main-content')
-    content = $content
-      .find('span.mw-headline').each (i, el) ->
-        $(this).replaceWith $(this).text()
-      .end()
-      .find('span.aui-icon').each (i, el) ->
-        $(this).replaceWith $(this).text()
-      .end()
-      .html();
-#    content = @fixLinks content
+    $ = @formatter.load fileText
+    $content = @formatter.getContent @_path.basename fullInPath
+    $content = @formatter.fixHeadline $content
+    $content = @formatter.fixIcon $content
+#    $content = @formatter.fixLinks $content
+    content = $content.html();
 
 #    @logger.info "Relinking images ..."
 #    @relinkImagesInFile outputFile, attachmentsExportPath, markdownImageReference #TODO attributes
 #    @logger.info "done"
 
     content
-
-
-#  fixLinks: (content) ->
-#    $ = @_cheerio.load content
-#    text = $('a').each (i, el) =>
-#      oldLink = $(this).attr 'href'
-#      if oldLink in HTML_FILE_LIST
-#        newLink = @_path.basename(oldLink, '.html') + '.md'
-#        $(this).attr 'href', newLink
-#    .end()
-#    .html()
-#
-#    text
 
 
   ###*
