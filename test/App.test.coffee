@@ -16,12 +16,10 @@ App = require '../src/App'
 describe 'App', ->
 
   it 'testing run', ->
-    fullPath = _path.join __dirname, 'assets'
-    console.log fullPath
-    _rmdir 'test/assets/Markdown', (error)->
+    pathResource = _path.join __dirname, 'assets'
+    pathResult = _path.join __dirname, 'Markdown'
+    _rmdir.sync pathResult, {'rmdirSync'}, (error)->
     logger = new Logger Logger.WARNING
     utils = new Utils _fs, _path, logger
     app = new App _fs, _exec, _path, _cheerio, _mkdirp, utils, logger
-    app.convert fullPath
-
-#    _rmdir 'test/assets/Markdown', (error)->
+    app.convert pathResource, pathResult

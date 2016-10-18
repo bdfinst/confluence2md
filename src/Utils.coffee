@@ -30,6 +30,7 @@ class Utils
 
 
   ###*
+  # @deprecated Use 'mkdirp' lib.
   # Will create directory structure.
   # @param {string} dirpath Dir structure to create (from pwd).
   ###

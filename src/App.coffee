@@ -20,65 +20,85 @@ class App
       pandocOptions: "--atx-headers"
 
 
-  convert: (@dir) ->
+  ###*
+  # Converts HTML files to MD files.
+  # @param {string} dirIn Directory to go through
+  # @param {string} dirOut Directory where to place converted MD files
+  ###
+  convert: (@dirIn, @dirOut) ->
 #    HTML_FILE_LIST = @utils.getAllHtmlFileNames dir
-    @dive @dir
+    @dive @dirIn, @dirOut
 
 
-  dive: (dir) ->
-    @logger.info "Reading the directory: " + dir
-    list = @_fs.readdirSync dir
+  ###*
+  # Iterates through whole dir structure and converts found files.
+  # @param {string} dirIn Directory to go through
+  # @param {string} dirOut Directory where to place converted MD files
+  ###
+  dive: (dirIn, dirOut) ->
+    @logger.info "Reading the directory: " + dirIn
+    list = @_fs.readdirSync dirIn
     list.forEach (file) =>
-      fullPath = dir + "/" + file
+      fullPath = @_path.join dirIn, file
       fileStat = @_fs.statSync fullPath
 
       if fileStat && fileStat.isDirectory()
-        @dive fullPath
+        @dive fullPath, @_path.join dirOut, file
       else
         if not file.endsWith '.html'
           @logger.debug 'Skipping non-html file: ' + file
           return
-        @parseFile fullPath
+        @convertFile fullPath, dirOut
 
 
-  parseFile: (fullPath) ->
-    @logger.info 'Parsing file: ' + fullPath
-    text = @prepareContent fullPath
-    extName = @_path.extname fullPath
-    markdownFileName = @_path.basename(fullPath, extName) + '.md'
+  ###*
+  # Converts HTML file at given path to MD.
+  # @param {string} fullInPath Absolute path to file to convert
+  # @param {string} dirOut Directory where to place converted MD files
+  ###
+  convertFile: (fullInPath, dirOut) ->
+    @logger.info 'Parsing file: ' + fullInPath
+    text = @prepareContent fullInPath
+    extName = @_path.extname fullInPath
+    fullOutFileName = @_path.join dirOut, @_path.basename(fullInPath, extName) + '.md'
 
-    @logger.info "Making Markdown ..."
-    outputFile = @writeMarkdownFile text, markdownFileName
-    @logger.info "done"
+    @logger.info 'Making Markdown ...'
+    @writeMarkdownFile text, fullOutFileName
+    @logger.info 'done ' + fullOutFileName
 
 
   ###*
   # @param {string} text Makdown content of file
-  # @param {string} markdownFileName File name of resulting file
+  # @param {string} fullOutFileName Absolute path to resulting file
+  # @return {string} Absolute path to created MD file
   ###
-  writeMarkdownFile: (text, markdownFileName) ->
-    console.log @dir
-    @_mkdirp @dir + @_path.sep + "Markdown"
-    outputFileName = @dir + @_path.sep + "Markdown" + @_path.sep + markdownFileName
-    inputFile = outputFileName + "~"
-    @_fs.writeFileSync inputFile, text
+  writeMarkdownFile: (text, fullOutFileName) ->
+    fullOutDirName = @_path.dirname fullOutFileName
+    @_mkdirp.sync fullOutDirName, (error) ->
+      if error
+        @logger.error 'Unable to create directory #{fullOutDirName}'
+
+    tempInputFile = fullOutFileName + '~'
+    @_fs.writeFileSync tempInputFile, text, flag: 'w'
     command =
-      "pandoc -f html -t " +
-        @options.pandocOutputType + " " +
+      'pandoc -f html -t ' +
+        @options.pandocOutputType + ' ' +
         @options.pandocOptions +
-        " -o " + outputFileName +
-        " " + inputFile
-    out = @_exec command, {cwd: process.cwd()}
-    @_fs.unlink inputFile
-
-    outputFileName
+        ' -o ' + fullOutFileName +
+        ' ' + tempInputFile
+    @_exec command, cwd: fullOutDirName
+    @_fs.unlink tempInputFile
 
 
-  prepareContent: (fullPath) ->
-    fileText = @_fs.readFileSync fullPath, 'utf8'
+  ###*
+  # Converts HTML file at given path to MD formatted text.
+  # @param {string} fullInPath Absolute path to file to convert
+  ###
+  prepareContent: (fullInPath) ->
+    fileText = @_fs.readFileSync fullInPath, 'utf8'
     $ = @_cheerio.load fileText
     $content =
-      if @_path.basename(fullPath) == 'index.html'
+      if @_path.basename(fullInPath) == 'index.html'
       then $('#content')
       else $('#main-content')
     content = $content
