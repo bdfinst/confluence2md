@@ -16,12 +16,3 @@ describe 'Utils', ->
       'index.html'
     ]
     assert.sameMembers actual, expected
-
-  it 'mkdirpSync() should create directory test/testingDir/foo/', ->
-    logger = new Logger Logger.WARNING
-    utils = new Utils _fs, _path, logger
-    directory = 'test/testingDir/foo'
-    _rmdir 'test/testingDir', (error)->
-    utils.mkdirpSync directory
-    assert.isDirectory directory
-    _rmdir 'test/testingDir', (error)->

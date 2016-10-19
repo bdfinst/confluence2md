@@ -30,21 +30,6 @@ class Utils
 
 
   ###*
-  # @deprecated Use 'mkdirp' lib.
-  # Will create directory structure.
-  # @param {string} dirpath Dir structure to create (from pwd).
-  ###
-  mkdirpSync: (dirpath) ->
-    @logger.debug "Making dir structure: " + dirpath
-    dirpath = dirpath + @_path.sep if dirpath.slice(-1) != @_path.sep
-    parts = dirpath.split @_path.sep
-
-    @mkdirSync @_path.join.apply(
-      null, parts.slice 0, i
-    ) for el, i in parts
-
-
-  ###*
   # fills the HTML_FILE_LIST constant
   ###
   getAllHtmlFileNames: (dir) ->
