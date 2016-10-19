@@ -48,6 +48,7 @@ class App
   convert: (@dirIn, @dirOut) ->
 #    HTML_FILE_LIST = @utils.getAllHtmlFileNames dir
     @dive @dirIn, @dirOut
+    @logger.info 'Total of XXX files processed' # TODO
 
 
   ###*
@@ -104,7 +105,8 @@ class App
       @pandocOptions +
       ' -o ' + fullOutFileName +
       ' ' + tempInputFile
-    @_exec command, cwd: fullOutDirName
+    out = @_exec command, cwd: fullOutDirName
+    @logger.error out.stderr if out.status > 0
     @_fs.unlink tempInputFile
 
 
