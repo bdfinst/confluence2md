@@ -59,6 +59,7 @@ class Formatter
 
 
   ###*
+  # Removes redundant icon
   # @param {cheerio obj} $content Content of a file
   # @return {cheerio obj} Cheerio object
   ###
@@ -67,6 +68,52 @@ class Formatter
     $content
       .find('span.aui-icon').each (i, el) ->
         $(this).replaceWith $(this).text()
+      .end()
+
+
+  ###*
+  # Removes empty link
+  # @param {cheerio obj} $content Content of a file
+  # @return {cheerio obj} Cheerio object
+  ###
+  fixEmptyLink: ($content) ->
+    $ = @$
+    $content
+      .find('a').each (i, el) ->
+        if $(this).text().length == 0
+          $(this).remove()
+      .end()
+
+
+  ###*
+  # Removes empty heading
+  # @param {cheerio obj} $content Content of a file
+  # @return {cheerio obj} Cheerio object
+  ###
+  fixEmptyHeading: ($content) ->
+    $ = @$
+    $content
+      .find(':header').each (i, el) ->
+        if $(this).text().length == 0
+          $(this).remove()
+      .end()
+
+
+  ###*
+  # Gives the right class to syntaxhighlighter
+  # @param {cheerio obj} $content Content of a file
+  # @return {cheerio obj} Cheerio object
+  ###
+  fixPreformattedText: ($content) ->
+    $ = @$
+    $content
+      .find('pre').each (i, el) ->
+        data = $(this).data('syntaxhighlighterParams')
+        $(this).attr('style', data)
+        styles = $(this).css()
+        brush = styles?.brush
+        $(this).removeAttr 'class'
+        $(this).addClass brush if brush
       .end()
 
 

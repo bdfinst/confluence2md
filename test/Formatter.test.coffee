@@ -33,3 +33,58 @@ describe 'Formatter', ->
       0
     )
 
+  it 'fixEmptyLink() should remove empty link', ->
+    logger = new Logger Logger.WARNING
+    formatter = new Formatter _cheerio, logger
+    text = '<h1 class="firstHeading" id="CodingStandards-">foo<a name="HTML_v_templatech" rel="nofollow"></a></h1>'
+    $content = formatter.load text
+    $content = formatter.fixEmptyLink $content
+    assert.equal(
+      $content.find('a').length
+      0
+    )
+
+  it 'fixEmptyLink() should keep non-empty link', ->
+    logger = new Logger Logger.WARNING
+    formatter = new Formatter _cheerio, logger
+    text = '<h1 class="firstHeading" id="CodingStandards-">foo<a name="HTML_v_templatech" rel="nofollow">bar</a></h1>'
+    $content = formatter.load text
+    $content = formatter.fixEmptyLink $content
+    assert.equal(
+      $content.find('a').length
+      1
+    )
+
+  it 'fixEmptyLink() should remove empty heading', ->
+    logger = new Logger Logger.WARNING
+    formatter = new Formatter _cheerio, logger
+    text = '<h1 class="firstHeading" id="CodingStandards-"><a name="HTML_v_templatech" rel="nofollow"></a></h1>'
+    $content = formatter.load text
+    $content = formatter.fixEmptyLink $content
+    assert.equal(
+      $content.find('a').length
+      0
+    )
+
+  it 'fixPreformattedText() should give php class the \<pre\> tag', ->
+    logger = new Logger Logger.WARNING
+    formatter = new Formatter _cheerio, logger
+    text = '<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: php; gutter: false; theme: Confluence" data-theme="Confluence">echo "foo";</pre>'
+    $content = formatter.load text
+    $content = formatter.fixPreformattedText $content
+    assert.equal(
+      $content.find('pre').attr('class')
+      'php'
+    )
+
+  it 'fixPreformattedText() should give no class to the \<pre\> tag when no brush is set', ->
+    logger = new Logger Logger.WARNING
+    formatter = new Formatter _cheerio, logger
+    text = '<pre class="syntaxhighlighter-pre" data-theme="Confluence">echo "foo";</pre>'
+    $content = formatter.load text
+    $content = formatter.fixPreformattedText $content
+    assert.equal(
+      $content.find('pre').attr('class')
+      undefined
+    )
+

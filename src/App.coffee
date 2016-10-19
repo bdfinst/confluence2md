@@ -101,6 +101,9 @@ class App
     $content = @formatter.getRightContentByFileName @_path.basename fullInPath
     $content = @formatter.fixHeadline $content
     $content = @formatter.fixIcon $content
+    $content = @formatter.fixEmptyLink $content
+    $content = @formatter.fixEmptyHeading $content
+    $content = @formatter.fixPreformattedText $content
 #    $content = @formatter.fixLinks $content
     content = $content.html();
 
