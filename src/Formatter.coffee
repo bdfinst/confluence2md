@@ -53,8 +53,8 @@ class Formatter
   fixHeadline: ($content) ->
     $ = @$
     $content
-      .find('span.mw-headline').each (i, el) ->
-        $(this).replaceWith $(this).text()
+      .find('span.mw-headline').each (i, el) =>
+        $(el).replaceWith $(el).text()
       .end()
 
 
@@ -66,8 +66,8 @@ class Formatter
   fixIcon: ($content) ->
     $ = @$
     $content
-      .find('span.aui-icon').each (i, el) ->
-        $(this).replaceWith $(this).text()
+      .find('span.aui-icon').each (i, el) =>
+        $(el).replaceWith $(el).text()
       .end()
 
 
@@ -79,12 +79,12 @@ class Formatter
   fixEmptyLink: ($content) ->
     $ = @$
     $content
-      .find('a').each (i, el) ->
+      .find('a').each (i, el) =>
         if (
-          $(this).text().trim().length == 0 \
-          and $(this).find('img').length == 0
+          $(el).text().trim().length == 0 \
+          and $(el).find('img').length == 0
         )
-          $(this).remove()
+          $(el).remove()
       .end()
 
 
@@ -96,9 +96,9 @@ class Formatter
   fixEmptyHeading: ($content) ->
     $ = @$
     $content
-      .find(':header').each (i, el) ->
-        if $(this).text().trim().length == 0
-          $(this).remove()
+      .find(':header').each (i, el) =>
+        if $(el).text().trim().length == 0
+          $(el).remove()
       .end()
 
 
@@ -110,13 +110,13 @@ class Formatter
   fixPreformattedText: ($content) ->
     $ = @$
     $content
-      .find('pre').each (i, el) ->
-        data = $(this).data('syntaxhighlighterParams')
-        $(this).attr('style', data)
-        styles = $(this).css()
+      .find('pre').each (i, el) =>
+        data = $(el).data('syntaxhighlighterParams')
+        $(el).attr('style', data)
+        styles = $(el).css()
         brush = styles?.brush
-        $(this).removeAttr 'class'
-        $(this).addClass brush if brush
+        $(el).removeAttr 'class'
+        $(el).addClass brush if brush
       .end()
 
 
@@ -128,9 +128,9 @@ class Formatter
   fixImageWithinSpan: ($content) ->
     $ = @$
     $content
-      .find('span:has(img)').each (i, el) ->
-        if $(this).text().trim().length == 0
-          $(this).replaceWith($(this).html())
+      .find('span:has(img)').each (i, el) =>
+        if $(el).text().trim().length == 0
+          $(el).replaceWith($(el).html())
       .end()
 
 
@@ -156,10 +156,10 @@ class Formatter
 #  fixLinks: ($content) ->
 #    $ = $content
 #    text = $('a').each (i, el) =>
-#      oldLink = $(this).attr 'href'
+#      oldLink = $(el).attr 'href'
 #      if oldLink in HTML_FILE_LIST
 #        newLink = @_path.basename(oldLink, '.html') + '.md'
-#        $(this).attr 'href', newLink
+#        $(el).attr 'href', newLink
 #    .end()
 #    .html()
 #
