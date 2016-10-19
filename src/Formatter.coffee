@@ -9,16 +9,36 @@ class Formatter
 
 
   ###*
-  # @param {string} fileText Content of a file
+  # @param {string} text Content of a file
+  # @return {cheerio obj} Root object of a text
   ###
-  load: (fileText) ->
-    @$ = @_cheerio.load fileText
+  load: (text) ->
+    @$ = @_cheerio.load text
+    @$.root()
 
 
   ###*
+  # @return {cheerio obj} Cheerio object
+  ###
+  getDollar: ->
+    @$
+
+
+  ###*
+  # @param {cheerio obj} $content Content of a file
+  # @return {string} Textual representation of a content
+  ###
+  getText: ($content) ->
+    $content.text()
+
+
+  ###*
+  # The right content is selected based on the filename given.
+  # Actual content of a page is placed elsewhere for index.html and other pages.
+  # @see load() You need to load the content first.
   # @param {string} fileName Name of a file
   ###
-  getContent: (fileName) ->
+  getRightContentByFileName: (fileName) ->
     $ = @$
     if fileName == 'index.html'
     then $('#content')
@@ -26,32 +46,36 @@ class Formatter
 
 
   ###*
-  # @param {cheerio obj} content Content of a file
+  # Removes span inside of a h1 tag.
+  # @param {cheerio obj} $content Content of a file
+  # @return {cheerio obj} Cheerio object
   ###
-  fixHeadline: (content) ->
+  fixHeadline: ($content) ->
     $ = @$
-    content
+    $content
       .find('span.mw-headline').each (i, el) ->
         $(this).replaceWith $(this).text()
       .end()
 
 
   ###*
-  # @param {cheerio obj} content Content of a file
+  # @param {cheerio obj} $content Content of a file
+  # @return {cheerio obj} Cheerio object
   ###
-  fixIcon: (content) ->
+  fixIcon: ($content) ->
     $ = @$
-    content
+    $content
       .find('span.aui-icon').each (i, el) ->
         $(this).replaceWith $(this).text()
       .end()
 
 
   ###*
-  # @param {cheerio obj} content Content of a file
+  # @param {cheerio obj} $content Content of a file
+  # @return {cheerio obj} Cheerio object
   ###
-#  fixLinks: (content) ->
-#    $ = content
+#  fixLinks: ($content) ->
+#    $ = $content
 #    text = $('a').each (i, el) =>
 #      oldLink = $(this).attr 'href'
 #      if oldLink in HTML_FILE_LIST

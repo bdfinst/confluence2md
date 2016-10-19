@@ -93,11 +93,12 @@ class App
   ###*
   # Converts HTML file at given path to MD formatted text.
   # @param {string} fullInPath Absolute path to file to convert
+  # @return {string} Content of a file parsed to MD
   ###
   prepareContent: (fullInPath) ->
     fileText = @_fs.readFileSync fullInPath, 'utf8'
-    $ = @formatter.load fileText
-    $content = @formatter.getContent @_path.basename fullInPath
+    $content = @formatter.load fileText
+    $content = @formatter.getRightContentByFileName @_path.basename fullInPath
     $content = @formatter.fixHeadline $content
     $content = @formatter.fixIcon $content
 #    $content = @formatter.fixLinks $content
