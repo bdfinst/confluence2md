@@ -80,7 +80,10 @@ class Formatter
     $ = @$
     $content
       .find('a').each (i, el) ->
-        if $(this).text().length == 0
+        if (
+          $(this).text().trim().length == 0 \
+          and $(this).find('img').length == 0
+        )
           $(this).remove()
       .end()
 
@@ -94,7 +97,7 @@ class Formatter
     $ = @$
     $content
       .find(':header').each (i, el) ->
-        if $(this).text().length == 0
+        if $(this).text().trim().length == 0
           $(this).remove()
       .end()
 
@@ -114,6 +117,35 @@ class Formatter
         brush = styles?.brush
         $(this).removeAttr 'class'
         $(this).addClass brush if brush
+      .end()
+
+
+  ###*
+  # Fixes 'p > a > span > img' for which no image was created.
+  # @param {cheerio obj} $content Content of a file
+  # @return {cheerio obj} Cheerio object
+  ###
+  fixImageWithinSpan: ($content) ->
+    $ = @$
+    $content
+      .find('span:has(img)').each (i, el) ->
+        if $(this).text().trim().length == 0
+          $(this).replaceWith($(this).html())
+      .end()
+
+
+  ###*
+  # Removes arbitrary confluence classes.
+  # @param {cheerio obj} $content Content of a file
+  # @return {cheerio obj} Cheerio object
+  ###
+  fixArbitraryClasses: ($content) ->
+    $ = @$
+    $content
+      .find('*').removeClass (i, e) ->
+        (
+          e.match(/(^|\s)confluence\-\S+/g) || []
+        ).join ' '
       .end()
 
 

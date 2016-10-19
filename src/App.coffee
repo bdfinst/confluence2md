@@ -5,6 +5,21 @@ class App
   ###
 #  HTML_FILE_LIST = [];
 
+  # @link http://hackage.haskell.org/package/pandoc For options description
+  @outputTypesAdd = [
+    'markdown_github' # use GitHub markdown variant
+    'blank_before_header' # insert blank line before header
+#    'mmd_link_attributes' # use MD syntax for images and links instead of HTML
+    'link_attributes' # use MD syntax for images and links instead of HTML
+  ]
+
+  @outputTypesRemove = [
+  ]
+
+  @extraOptions = [
+    '--atx-headers' # Setext-style headers (underlined) | ATX-style headers (prefixed with hashes)
+  ]
+
   ###*
   # @param {fs} _fs Required lib
   # @param {sync-exec} _exec Required lib
@@ -15,9 +30,14 @@ class App
   # @param {Logger} logger My lib
   ###
   constructor: (@_fs, @_exec, @_path, @_mkdirp, @utils, @formatter, @logger) ->
-    @options =
-      pandocOutputType: "markdown_github+blank_before_header"
-      pandocOptions: "--atx-headers"
+    typesAdd = App.outputTypesAdd.join '+'
+    typesRemove = App.outputTypesRemove.join '-'
+    typesRemove = if typesRemove then '-' + typesRemove else ''
+    types = typesAdd + typesRemove
+    @pandocOptions = [
+      if types then '-t ' + types else ''
+      App.extraOptions.join ' '
+    ].join ' '
 
 
   ###*
@@ -80,12 +100,10 @@ class App
 
     tempInputFile = fullOutFileName + '~'
     @_fs.writeFileSync tempInputFile, text, flag: 'w'
-    command =
-      'pandoc -f html -t ' +
-        @options.pandocOutputType + ' ' +
-        @options.pandocOptions +
-        ' -o ' + fullOutFileName +
-        ' ' + tempInputFile
+    command = 'pandoc -f html ' +
+      @pandocOptions +
+      ' -o ' + fullOutFileName +
+      ' ' + tempInputFile
     @_exec command, cwd: fullOutDirName
     @_fs.unlink tempInputFile
 
@@ -104,6 +122,8 @@ class App
     $content = @formatter.fixEmptyLink $content
     $content = @formatter.fixEmptyHeading $content
     $content = @formatter.fixPreformattedText $content
+    $content = @formatter.fixImageWithinSpan $content
+    $content = @formatter.fixArbitraryClasses $content
 #    $content = @formatter.fixLinks $content
     content = $content.html();
 

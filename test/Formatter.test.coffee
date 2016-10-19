@@ -88,3 +88,14 @@ describe 'Formatter', ->
       undefined
     )
 
+  it 'fixImageWithinSpan() should give ...', ->
+    logger = new Logger Logger.WARNING
+    formatter = new Formatter _cheerio, logger
+    text = '<pre class="syntaxhighlighter-pre" data-theme="Confluence">echo "foo";</pre>'
+    $content = formatter.load text
+    $content = formatter.fixPreformattedText $content
+    assert.equal(
+      $content.find('pre').attr('class')
+      undefined
+    )
+
