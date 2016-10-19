@@ -3,9 +3,10 @@ class Formatter
 
   ###*
   # @param {cheerio} _cheerio Required lib
+  # @param {Utils} utils My lib
   # @param {Logger} logger My lib
   ###
-  constructor: (@_cheerio, @logger) ->
+  constructor: (@_cheerio, @utils, @logger) ->
 
 
   ###*
@@ -144,8 +145,38 @@ class Formatter
     $content
       .find('*').removeClass (i, e) ->
         (
-          e.match(/(^|\s)confluence\-\S+/g) || []
+          e.match(/(^|\s)(confluence\-\S+|external-link)/g) || []
         ).join ' '
+      .end()
+
+
+  fixAttachmentWraper: ($content) ->
+    $ = @$
+    # TODO NOTE 9569065.html
+    # html body div#page div.pageSection.group div.greybox a
+    $content
+#      .find('.attachment-buttons').remove().end()
+#      .find('.plugin_attachments_upload_container').remove().end()
+
+
+  ###*
+  # Changes links to local HTML files to generated MD files.
+  # @param {cheerio obj} $content Content of a file
+  # @param {string} cwd Current working directory
+  # @return {cheerio obj} Cheerio object
+  ###
+  fixLocalLinks: ($content, cwd) ->
+    $ = @$
+    $content
+      .find('a').each (i, el) =>
+        href = $(el).attr 'href'
+        if href == undefined
+          text = $(el).text()
+          $(el).replaceWith text
+          @logger.debug 'No href for link with text "#{text}"'
+        else if @utils.isFile href, cwd
+          mdRelativeLink = href.replace '.html', '.md'
+          $(el).attr 'href', mdRelativeLink
       .end()
 
 

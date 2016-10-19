@@ -30,6 +30,18 @@ class Utils
 
 
   ###*
+  # Checks if given file exists and is a file.
+  # @param {string} filePath Absolute/relative path to a file
+  # @param {string|void} cwd Current working directory against which the path is built.
+  # @return {bool}
+  ###
+  isFile: (filePath, cwd = '') ->
+    pathFull = @_path.resolve cwd, filePath
+    @_fs.existsSync(pathFull) \
+      && ((stat = @_fs.statSync(pathFull)) && stat.isFile())
+
+
+  ###*
   # fills the HTML_FILE_LIST constant
   ###
   getAllHtmlFileNames: (dir) ->

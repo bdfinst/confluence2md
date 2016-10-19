@@ -126,6 +126,8 @@ class App
     $content = @formatter.fixPreformattedText $content
     $content = @formatter.fixImageWithinSpan $content
     $content = @formatter.fixArbitraryClasses $content
+    $content = @formatter.fixAttachmentWraper $content
+    $content = @formatter.fixLocalLinks $content, @_path.dirname fullInPath
 #    $content = @formatter.fixLinks $content
     content = $content.html();
 

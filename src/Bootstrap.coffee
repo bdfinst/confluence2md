@@ -22,7 +22,7 @@ class Bootstrap
 
     logger = new Logger Logger.INFO
     utils = new Utils _fs, _path, logger
-    formatter = new Formatter _cheerio, logger
+    formatter = new Formatter _cheerio, utils, logger
     app = new App _fs, _exec, _path, _mkdirp, utils, formatter, logger
 
     logger.info 'Using source: ' + pathResource
