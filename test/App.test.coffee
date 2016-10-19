@@ -1,17 +1,4 @@
-chai = require 'chai'
-assert = chai.assert
-
-_fs = require 'fs'
-_exec = require 'sync-exec'
-_path = require 'path'
-_rmdir = require 'rimraf'
-_cheerio = require 'cheerio'
-_mkdirp = require 'mkdirp'
-
-Logger = require '../src/Logger'
-Utils = require '../src/Utils'
-Formatter = require '../src/Formatter'
-App = require '../src/App'
+require './init'
 
 
 describe 'App', ->

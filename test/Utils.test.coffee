@@ -1,13 +1,4 @@
-chai = require 'chai'
-chai.use require 'chai-fs'
-assert = chai.assert
-
-_fs = require 'fs'
-_path = require 'path'
-_rmdir = require 'rimraf'
-
-Logger = require '../src/Logger'
-Utils = require '../src/Utils'
+require './init'
 
 
 describe 'Utils', ->
