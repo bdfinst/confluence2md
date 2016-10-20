@@ -42,7 +42,7 @@ class App
   ###
   convert: (@dirIn, @dirOut) ->
     indexHtmlFiles = @dive @dirIn, @dirOut
-    @writeGlobalIndexFile indexHtmlFiles, @dirOut
+    @writeGlobalIndexFile indexHtmlFiles, @dirOut if not @utils.isFile @dirIn
     @logger.info 'Conversion done'
 
 
@@ -138,6 +138,7 @@ class App
     $content = @formatter.fixImageWithinSpan $content
     $content = @formatter.fixArbitraryClasses $content
     $content = @formatter.fixAttachmentWraper $content
+    $content = @formatter.fixPageLog $content
     $content = @formatter.fixLocalLinks $content, @_path.dirname fullInPath
     @formatter.getHtml $content
 

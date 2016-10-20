@@ -53,8 +53,10 @@ class Formatter
   getRightContentByFileName: (fileName) ->
     $ = @$
     if fileName == 'index.html'
-    then $('#content')
-    else $('#main-content, .pageSection.group:has(.pageSectionHeader>#attachments)')
+      $('#content')
+        .find('#main-content>.confluenceTable').remove().end() # Removes arbitrary table located on top of index page
+    else
+      $('#main-content, .pageSection.group:has(.pageSectionHeader>#attachments)')
 
 
   ###*
@@ -161,12 +163,29 @@ class Formatter
       .end()
 
 
+  ###*
+  # Removes arbitrary confluence elements for attachments.
+  # @param {cheerio obj} $content Content of a file
+  # @return {cheerio obj} Cheerio object
+  ###
   fixAttachmentWraper: ($content) ->
     $ = @$
     $content
       .find('.attachment-buttons').remove().end() # action buttons for attachments
       .find('.plugin_attachments_upload_container').remove().end() # dropbox for uploading new files
       .find('table.attachments.aui').remove().end() # overview table with useless links
+
+
+  ###*
+  # Removes arbitrary confluence elements for page log.
+  # @param {cheerio obj} $content Content of a file
+  # @return {cheerio obj} Cheerio object
+  ###
+  fixPageLog: ($content) ->
+    $ = @$
+    $content
+      .find('[id$="Recentspaceactivity"], [id$=Spacecontributors]').parent().remove()
+      .end().end()
 
 
   ###*
