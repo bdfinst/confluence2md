@@ -13,7 +13,7 @@ class Bootstrap
 
 
   ###*
-  # @param {string} pathResource Directory with HTML files. Can be nested.
+  # @param {string} pathResource Directory with HTML files or one file. Can be nested.
   # @param {string|void} pathResult Directory where MD files will be generated to. Current dir will be used if none given.
   ###
   run: (pathResource, pathResult = '') ->

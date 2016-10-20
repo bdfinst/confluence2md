@@ -53,14 +53,15 @@ class App
 
   ###*
   # Iterates through whole dir structure and converts found files.
-  # @param {string} dirIn Directory to go through
+  # @param {string} dirIn Directory or file to go through
   # @param {string} dirOut Directory where to place converted MD files
   ###
   dive: (dirIn, dirOut) ->
-    @logger.info "Reading the directory: " + dirIn
-    list = @_fs.readdirSync dirIn
+    @logger.info "Reading: " + dirIn
+    isFileDirIn = @utils.isFile dirIn
+    list = if isFileDirIn then [dirIn] else @_fs.readdirSync dirIn
     list.forEach (file) =>
-      fullPath = @_path.join dirIn, file
+      fullPath = if isFileDirIn then dirIn else @_path.join dirIn, file
       fileStat = @_fs.statSync fullPath
 
       if fileStat && fileStat.isDirectory()
