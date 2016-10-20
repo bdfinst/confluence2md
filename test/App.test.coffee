@@ -9,7 +9,7 @@ describe 'App', ->
     _rmdir.sync pathResult, {'rmdirSync'}, (error)->
     logger = new Logger Logger.WARNING
     formatter = new Formatter _cheerio, logger
-    utils = new Utils _fs, _path, logger
+    utils = new Utils _fs, _path, _ncp, logger
     app = new App _fs, _exec, _path, _mkdirp, utils, formatter, logger
     app.convert pathResource, pathResult
 
@@ -20,6 +20,6 @@ describe 'App', ->
     _rmdir.sync pathResult, {'rmdirSync'}, (error)->
     logger = new Logger Logger.WARNING
     formatter = new Formatter _cheerio, logger
-    utils = new Utils _fs, _path, logger
+    utils = new Utils _fs, _path, _ncp, logger
     app = new App _fs, _exec, _path, _mkdirp, utils, formatter, logger
     app.convert pathResource, pathResult

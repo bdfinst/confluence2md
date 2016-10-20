@@ -86,6 +86,7 @@ class App
 
     @logger.info 'Making Markdown ...'
     @writeMarkdownFile text, fullOutFileName
+    @utils.copyAssets @_path.dirname(fullInPath), dirOut
     @logger.info 'done ' + fullOutFileName
 
 

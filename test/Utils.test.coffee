@@ -5,7 +5,7 @@ describe 'Utils', ->
 
   it 'getAllHtmlFileNames() should return 5 file names for page1 directory', ->
     logger = new Logger Logger.WARNING
-    utils = new Utils _fs, _path, logger
+    utils = new Utils _fs, _path, _ncp, logger
     fullPath = _path.join __dirname, 'assets/page1'
     actual = utils.getAllHtmlFileNames fullPath
     expected = [

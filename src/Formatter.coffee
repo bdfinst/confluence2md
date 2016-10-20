@@ -164,17 +164,16 @@ class Formatter
 
   fixAttachmentWraper: ($content) ->
     $ = @$
-    # TODO NOTE 9569065.html
-    # html body div#page div.pageSection.group div.greybox a
     $content
-#      .find('.attachment-buttons').remove().end()
-#      .find('.plugin_attachments_upload_container').remove().end()
+      .find('.attachment-buttons').remove().end() # action buttons for attachments
+      .find('.plugin_attachments_upload_container').remove().end() # dropbox for uploading new files
+      .find('table.attachments.aui').remove().end() # overview table with useless links
 
 
   ###*
   # Changes links to local HTML files to generated MD files.
   # @param {cheerio obj} $content Content of a file
-  # @param {string} cwd Current working directory
+  # @param {string} cwd Current working directory (where HTML files reside)
   # @return {cheerio obj} Cheerio object
   ###
   fixLocalLinks: ($content, cwd) ->

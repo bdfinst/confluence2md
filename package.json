@@ -24,14 +24,15 @@
     "coffee-script": "^1.10.0",
     "fs": "0.0.1-security",
     "mkdirp": "^0.5.1",
+    "ncp": "^2.0.0",
     "path": "^0.12.7",
+    "rimraf": "^2.5.4",
     "sync-exec": "^0.6.2"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-fs": "^0.1.0",
-    "mocha": "^3.1.0",
-    "rimraf": "^2.5.4"
+    "mocha": "^3.1.0"
   },
   "scripts": {
     "start": "node ./src/index.coffee",
