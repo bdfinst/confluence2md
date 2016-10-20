@@ -130,7 +130,7 @@ class App
     $content = @formatter.fixAttachmentWraper $content
     $content = @formatter.fixLocalLinks $content, @_path.dirname fullInPath
 #    $content = @formatter.fixLinks $content
-    content = $content.html();
+    content = @formatter.getHtml $content
 
 #    @logger.info "Relinking images ..."
 #    @relinkImagesInFile outputFile, attachmentsExportPath, markdownImageReference #TODO attributes

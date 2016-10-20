@@ -34,6 +34,18 @@ class Formatter
 
 
   ###*
+  # @param {cheerio obj} $content Content of a file
+  # @return {string} HTML representation of a content
+  ###
+  getHtml: ($content) ->
+    $ = @$
+    contentHtml = ''
+    $content.each (i, el) =>
+      contentHtml += $(el).html()
+    contentHtml
+
+
+  ###*
   # The right content is selected based on the filename given.
   # Actual content of a page is placed elsewhere for index.html and other pages.
   # @see load() You need to load the content first.
@@ -43,7 +55,7 @@ class Formatter
     $ = @$
     if fileName == 'index.html'
     then $('#content')
-    else $('#main-content')
+    else $('#main-content, .pageSection.group:has(.pageSectionHeader>#attachments)')
 
 
   ###*
