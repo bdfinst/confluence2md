@@ -41,30 +41,45 @@ class App
   # @param {string} dirOut Directory where to place converted MD files
   ###
   convert: (@dirIn, @dirOut) ->
-    @dive @dirIn, @dirOut
+    indexHtmlFiles = @dive @dirIn, @dirOut
+    @writeGlobalIndexFile indexHtmlFiles, @dirOut
     @logger.info 'Conversion done'
 
 
   ###*
   # Iterates through whole dir structure and converts found files.
-  # @param {string} dirIn Directory or file to go through
-  # @param {string} dirOut Directory where to place converted MD files
+  # @param {string} dirIn Absolute path to a directory or file to go through
+  # @param {string} dirOut Absolute path to a directory where to place converted MD files
+  # @return {array} indexHtmlFiles Relative paths of index.html files from all parsed Confluence spaces
   ###
   dive: (dirIn, dirOut) ->
     @logger.info "Reading: " + dirIn
-    isFileDirIn = @utils.isFile dirIn
-    list = if isFileDirIn then [dirIn] else @_fs.readdirSync dirIn
+    isFileInActuallyDirectory = @utils.isFile dirIn
+    indexHtmlFiles = []
+
+    if isFileInActuallyDirectory
+      startingDir = dirIn
+      list = [dirIn]
+    else
+      startingDir = @_path.dirname dirIn
+      list = @_fs.readdirSync dirIn
+
     list.forEach (file) =>
-      fullPath = if isFileDirIn then dirIn else @_path.join dirIn, file
+      fullPath = if isFileInActuallyDirectory then dirIn else @_path.join dirIn, file
       fileStat = @_fs.statSync fullPath
 
       if fileStat && fileStat.isDirectory()
-        @dive fullPath, @_path.join dirOut, file
+        indexHtmlFiles.push (@dive fullPath, @_path.join dirOut, file)...
       else
         if not file.endsWith '.html'
           @logger.debug 'Skipping non-html file: ' + file
           return
+        if @_path.basename(file) == 'index.html'
+          spaceDir = @_path.basename @_path.dirname fullPath
+          indexHtmlFiles.push @_path.join spaceDir, 'index.md'
         @convertFile fullPath, dirOut
+
+    indexHtmlFiles
 
 
   ###*
@@ -125,6 +140,18 @@ class App
     $content = @formatter.fixAttachmentWraper $content
     $content = @formatter.fixLocalLinks $content, @_path.dirname fullInPath
     @formatter.getHtml $content
+
+
+  ###*
+  # @param {array} indexHtmlFiles Relative paths of index.html files from all parsed Confluence spaces
+  # @param {string} dirOut Absolute path to a directory where to place converted MD files
+  ###
+  writeGlobalIndexFile: (indexHtmlFiles, dirOut) ->
+    globalIndex = @_path.join dirOut, 'index.md'
+    $content = @formatter.createListFromArray indexHtmlFiles
+    text = @formatter.getHtml $content
+    @writeMarkdownFile text, globalIndex
+
 
 
 module.exports = App

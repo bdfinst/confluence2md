@@ -190,4 +190,19 @@ class Formatter
       .end()
 
 
+  ###*
+  # @param {array} indexHtmlFiles Relative paths of index.html files from all parsed Confluence spaces
+  # @return {cheerio obj} Cheerio object
+  ###
+  createListFromArray: (itemArray) ->
+    $ = @_cheerio.load '<ul>'
+    $ul = $('ul')
+    for item in itemArray
+      $a = $('<a>').attr('href', item).text(item)
+      $li = $('<li>')
+      $li.append $a
+      $ul.append $li
+    $ul.end()
+
+
 module.exports = Formatter
