@@ -1,6 +1,5 @@
 class Formatter
 
-
   ###*
   # @param {cheerio} _cheerio Required lib
   # @param {Utils} utils My lib
@@ -189,23 +188,6 @@ class Formatter
           mdRelativeLink = href.replace '.html', '.md'
           $(el).attr 'href', mdRelativeLink
       .end()
-
-
-  ###*
-  # @param {cheerio obj} $content Content of a file
-  # @return {cheerio obj} Cheerio object
-  ###
-#  fixLinks: ($content) ->
-#    $ = $content
-#    text = $('a').each (i, el) =>
-#      oldLink = $(el).attr 'href'
-#      if oldLink in HTML_FILE_LIST
-#        newLink = @_path.basename(oldLink, '.html') + '.md'
-#        $(el).attr 'href', newLink
-#    .end()
-#    .html()
-#
-#    text
 
 
 module.exports = Formatter

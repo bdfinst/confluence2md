@@ -9,19 +9,6 @@ class Utils
   constructor: (@_fs, @_path, @_ncp, @logger) ->
 
 
-  getPageTitle: (content) ->
-    titleRegex = /<title>(.*)<\/title>/i;
-    match = content.match titleRegex
-
-    if match isnt null && match.length >= 1
-    then match[1]
-    else null
-
-
-  uniq: (a) ->
-    Array.from new Set a
-
-
   mkdirSync: (path) ->
     @logger.debug "Making dir: " + path
     try
@@ -64,24 +51,6 @@ class Utils
       assetsDirIn = @_path.join pathWithHtmlFiles, asset
       assetsDirOut = @_path.join dirOut, asset
       @_ncp assetsDirIn, assetsDirOut if @isDir(assetsDirIn)
-
-
-  ###*
-  # fills the HTML_FILE_LIST constant
-  ###
-  getAllHtmlFileNames: (dir) ->
-    htmlFileList = []
-    list = @_fs.readdirSync dir
-    list.forEach (file) =>
-      fullPath = dir + @_path.sep + file
-      fileStat = @_fs.statSync fullPath
-
-      if fileStat && fileStat.isDirectory()
-        htmlFileList.push (@getAllHtmlFileNames fullPath)...
-      else if file.endsWith '.html'
-        htmlFileList.push file
-
-    htmlFileList
 
 
 module.exports = Utils
