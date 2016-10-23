@@ -203,6 +203,8 @@ class Formatter
           text = $(el).text()
           $(el).replaceWith text
           @logger.debug 'No href for link with text "#{text}"'
+        else if $(el).hasClass 'createlink'
+          $(el).replaceWith $(el).text()
         else if @utils.isFile href, cwd
           mdRelativeLink = href.replace '.html', '.md'
           $(el).attr 'href', mdRelativeLink
