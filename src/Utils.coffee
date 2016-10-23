@@ -42,6 +42,37 @@ class Utils
 
 
   ###*
+  # Return list of files (and directories) in a given directory.
+  # @param {string} path Absolute path to a directory.
+  # @param {bool|void} filesOnly Whether to return only files.
+  # @return {array}
+  ###
+  readDirRecursive: (path, filesOnly = true) ->
+    fullPaths = []
+    return [path] if @isFile path
+    for fileName in @_fs.readdirSync path
+      fullPath = @_path.join path, fileName
+      if @isFile fullPath
+        fullPaths.push fullPath
+      else
+        fullPaths.push fullPath if not filesOnly
+        fullPaths.push @readDirRecursive(fullPath, filesOnly)...
+    fullPaths
+
+
+  getBasename: (path, extension) ->
+    @_path.basename path, extension
+
+
+  getDirname: (path) ->
+    @_path.dirname path
+
+
+  readFile: (path) ->
+    @_fs.readFileSync path, 'utf8'
+
+
+  ###*
   # Copies assets directories to path with MD files
   # @param {string} fullInPath Absolute path to file to convert
   # @param {string} dirOut Directory where to place converted MD files

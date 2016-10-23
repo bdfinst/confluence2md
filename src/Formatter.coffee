@@ -13,15 +13,7 @@ class Formatter
   # @return {cheerio obj} Root object of a text
   ###
   load: (text) ->
-    @$ = @_cheerio.load text
-    @$.root()
-
-
-  ###*
-  # @return {cheerio obj} Cheerio object
-  ###
-  getDollar: ->
-    @$
+    @_cheerio.load text
 
 
   ###*
@@ -37,7 +29,7 @@ class Formatter
   # @return {string} HTML representation of a content
   ###
   getHtml: ($content) ->
-    $ = @$
+    $ = @_cheerio
     contentHtml = ''
     $content.each (i, el) =>
       contentHtml += $(el).html()
@@ -50,13 +42,12 @@ class Formatter
   # @see load() You need to load the content first.
   # @param {string} fileName Name of a file
   ###
-  getRightContentByFileName: (fileName) ->
-    $ = @$
+  getRightContentByFileName: ($content, fileName) ->
     if fileName == 'index.html'
-      $('#content')
+      $content.find('#content')
         .find('#main-content>.confluenceTable').remove().end() # Removes arbitrary table located on top of index page
     else
-      $('#main-content, .pageSection.group:has(.pageSectionHeader>#attachments)')
+      $content.find('#main-content, .pageSection.group:has(.pageSectionHeader>#attachments)')
 
 
   ###*
@@ -65,11 +56,17 @@ class Formatter
   # @return {cheerio obj} Cheerio object
   ###
   fixHeadline: ($content) ->
-    $ = @$
+    $ = @_cheerio
     $content
       .find('span.mw-headline').each (i, el) =>
         $(el).replaceWith $(el).text()
       .end()
+
+
+  addPageHeading: ($content, headingText) ->
+    $ = @_cheerio
+    h1 = $('<h1>').text headingText
+    $content.prepend h1
 
 
   ###*
@@ -78,7 +75,7 @@ class Formatter
   # @return {cheerio obj} Cheerio object
   ###
   fixIcon: ($content) ->
-    $ = @$
+    $ = @_cheerio
     $content
       .find('span.aui-icon').each (i, el) =>
         $(el).replaceWith $(el).text()
@@ -91,7 +88,7 @@ class Formatter
   # @return {cheerio obj} Cheerio object
   ###
   fixEmptyLink: ($content) ->
-    $ = @$
+    $ = @_cheerio
     $content
       .find('a').each (i, el) =>
         if (
@@ -108,7 +105,7 @@ class Formatter
   # @return {cheerio obj} Cheerio object
   ###
   fixEmptyHeading: ($content) ->
-    $ = @$
+    $ = @_cheerio
     $content
       .find(':header').each (i, el) =>
         if $(el).text().trim().length == 0
@@ -122,7 +119,7 @@ class Formatter
   # @return {cheerio obj} Cheerio object
   ###
   fixPreformattedText: ($content) ->
-    $ = @$
+    $ = @_cheerio
     $content
       .find('pre').each (i, el) =>
         data = $(el).data('syntaxhighlighterParams')
@@ -140,7 +137,7 @@ class Formatter
   # @return {cheerio obj} Cheerio object
   ###
   fixImageWithinSpan: ($content) ->
-    $ = @$
+    $ = @_cheerio
     $content
       .find('span:has(img)').each (i, el) =>
         if $(el).text().trim().length == 0
@@ -154,7 +151,6 @@ class Formatter
   # @return {cheerio obj} Cheerio object
   ###
   fixArbitraryClasses: ($content) ->
-    $ = @$
     $content
       .find('*').removeClass (i, e) ->
         (
@@ -169,7 +165,6 @@ class Formatter
   # @return {cheerio obj} Cheerio object
   ###
   fixAttachmentWraper: ($content) ->
-    $ = @$
     $content
       .find('.attachment-buttons').remove().end() # action buttons for attachments
       .find('.plugin_attachments_upload_container').remove().end() # dropbox for uploading new files
@@ -182,7 +177,6 @@ class Formatter
   # @return {cheerio obj} Cheerio object
   ###
   fixPageLog: ($content) ->
-    $ = @$
     $content
       .find('[id$="Recentspaceactivity"], [id$=Spacecontributors]').parent().remove()
       .end().end()
@@ -191,11 +185,11 @@ class Formatter
   ###*
   # Changes links to local HTML files to generated MD files.
   # @param {cheerio obj} $content Content of a file
-  # @param {string} cwd Current working directory (where HTML files reside)
+  # @param {string} cwd Current working directory (where HTML file reside)
   # @return {cheerio obj} Cheerio object
   ###
   fixLocalLinks: ($content, cwd) ->
-    $ = @$
+    $ = @_cheerio
     $content
       .find('a').each (i, el) =>
         href = $(el).attr 'href'
@@ -216,6 +210,7 @@ class Formatter
   # @return {cheerio obj} Cheerio object
   ###
   createListFromArray: (itemArray) ->
+    $ = @_cheerio
     $ = @_cheerio.load '<ul>'
     $ul = $('ul')
     for item in itemArray

@@ -11,6 +11,7 @@ class Bootstrap
   Logger = require './Logger'
   Formatter = require './Formatter'
   App = require './App'
+  PageFactory = require './PageFactory'
 
 
   ###*
@@ -24,7 +25,8 @@ class Bootstrap
     logger = new Logger Logger.INFO
     utils = new Utils _fs, _path, _ncp, logger
     formatter = new Formatter _cheerio, utils, logger
-    app = new App _fs, _exec, _path, _mkdirp, utils, formatter, logger
+    pageFactory = new PageFactory formatter, utils
+    app = new App _fs, _exec, _path, _mkdirp, utils, formatter, pageFactory, logger
 
     logger.info 'Using source: ' + pathResource
     logger.info 'Using destination: ' + pathResult
