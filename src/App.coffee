@@ -51,8 +51,7 @@ class App
         if page.fileName == 'index.html'
           spaceDir = @_path.basename @_path.dirname page.fileName
           indexHtmlFiles.push @_path.join spaceDir, 'index.md'
-#          indexHtmlFiles.push page.path.replace page.fileName, 'index.md'
-        @convertPage page, dirOut
+        @convertPage page, dirIn, dirOut, pages
 
 #    @writeGlobalIndexFile indexHtmlFiles, dirOut if not @utils.isFile dirIn #FIXME
     @logger.info 'Conversion done'
@@ -63,14 +62,12 @@ class App
   # @param {Page} page Page entity of HTML file
   # @param {string} dirOut Directory where to place converted MD files
   ###
-  convertPage: (page, dirOut) ->
-    console.log page.heading
-    console.log page.fileNameNew
+  convertPage: (page, dirIn, dirOut, pages) ->
     @logger.info page.path + '\nParsing ...'
-    text = page.getTextToConvert()
-    fullOutFileName = @_path.join dirOut, page.fileNameNew
+    text = page.getTextToConvert pages
+    fullOutFileName = @_path.join dirOut, page.space, page.fileNameNew
 
-    @logger.info 'Making Markdown ...' + fullOutFileName
+    @logger.info 'Making Markdown ... ' + fullOutFileName
     @writeMarkdownFile text, fullOutFileName
     @utils.copyAssets @utils.getDirname(page.path), dirOut
     @logger.info 'Done\n'

@@ -8,16 +8,23 @@ class Page
 
   init: () ->
     @fileName = @utils.getBasename @path
+    @fileBaseName = @utils.getBasename @path, '.html'
     @filePlainText = @utils.readFile @path
     @$ = @formatter.load @filePlainText
     @content = @$.root()
     @heading = @getHeading()
     @fileNameNew = @getFileNameNew()
+    @space = @utils.getBasename @utils.getDirname @path
+    @spacePath = @getSpacePath()
+
+
+  getSpacePath: () ->
+    '../' + @space + '/' + @fileNameNew
 
 
   getFileNameNew: () ->
     return 'index.md' if @fileName == 'index.html'
-    @heading.replace(/[\s\\/]/g, '_') + '.md'
+    @heading.replace(/[\s\\/()]/g, '_') + '.md'
 
 
   getHeading: () ->
@@ -33,7 +40,7 @@ class Page
   # Converts HTML file at given path to MD formatted text.
   # @return {string} Content of a file parsed to MD
   ###
-  getTextToConvert: () ->
+  getTextToConvert: (pages) ->
     content = @formatter.getRightContentByFileName @content, @fileName
     content = @formatter.fixHeadline content
     content = @formatter.fixIcon content
@@ -44,7 +51,7 @@ class Page
     content = @formatter.fixArbitraryClasses content
     content = @formatter.fixAttachmentWraper content
     content = @formatter.fixPageLog content
-    content = @formatter.fixLocalLinks content, @utils.getDirname @path
+    content = @formatter.fixLocalLinks content, @utils.getDirname(@path), pages
     content = @formatter.addPageHeading content, @heading
     @formatter.getHtml content
 

@@ -72,6 +72,26 @@ class Utils
     @_fs.readFileSync path, 'utf8'
 
 
+  getLinkToNewPageFile: (href, pages) ->
+    fileName = @getBasename href
+
+    # relative link to file
+    if fileName.endsWith '.html'
+      fileName.replace '.html', '.md'
+
+    # link to confluence
+    # link to confluence pageId
+    else if matches = href.match /.*pageId=(\d+).*/
+      pageId = matches[1]
+      for page in pages
+        if pageId == page.fileBaseName
+          return page.spacePath
+
+    # link outside
+    else
+      undefined
+
+
   ###*
   # Copies assets directories to path with MD files
   # @param {string} fullInPath Absolute path to file to convert

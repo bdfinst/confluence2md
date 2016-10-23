@@ -188,7 +188,7 @@ class Formatter
   # @param {string} cwd Current working directory (where HTML file reside)
   # @return {cheerio obj} Cheerio object
   ###
-  fixLocalLinks: ($content, cwd) ->
+  fixLocalLinks: ($content, cwd, pages) ->
     $ = @_cheerio
     $content
       .find('a').each (i, el) =>
@@ -199,9 +199,8 @@ class Formatter
           @logger.debug 'No href for link with text "#{text}"'
         else if $(el).hasClass 'createlink'
           $(el).replaceWith $(el).text()
-        else if @utils.isFile href, cwd
-          mdRelativeLink = href.replace '.html', '.md'
-          $(el).attr 'href', mdRelativeLink
+        else if pageLink = @utils.getLinkToNewPageFile href, pages
+          $(el).attr 'href', pageLink
       .end()
 
 
