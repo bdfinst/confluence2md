@@ -63,13 +63,13 @@ class App
   # @param {string} dirOut Directory where to place converted MD files
   ###
   convertPage: (page, dirIn, dirOut, pages) ->
-    @logger.info page.path + '\nParsing ...'
+    @logger.info 'Parsing ...' + page.path
     text = page.getTextToConvert pages
     fullOutFileName = @_path.join dirOut, page.space, page.fileNameNew
 
     @logger.info 'Making Markdown ... ' + fullOutFileName
     @writeMarkdownFile text, fullOutFileName
-    @utils.copyAssets @utils.getDirname(page.path), dirOut
+    @utils.copyAssets @utils.getDirname(page.path), @utils.getDirname(fullOutFileName)
     @logger.info 'Done\n'
 
 

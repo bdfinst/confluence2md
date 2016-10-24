@@ -77,7 +77,7 @@ class Utils
 
     # relative link to file
     if fileName.endsWith '.html'
-      fileName.replace '.html', '.md'
+      fileName.replace '.html', '' # gitit requires link to pages without .md extension
 
     # link to confluence
     # link to confluence pageId
@@ -85,7 +85,7 @@ class Utils
       pageId = matches[1]
       for page in pages
         if pageId == page.fileBaseName
-          return page.spacePath
+          return page.spacePath.replace '.html', '' # gitit requires link to pages without .md extension
 
     # link outside
     else
