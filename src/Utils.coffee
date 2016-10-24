@@ -72,20 +72,25 @@ class Utils
     @_fs.readFileSync path, 'utf8'
 
 
-  getLinkToNewPageFile: (href, pages) ->
+  getLinkToNewPageFile: (href, pages, space) ->
     fileName = @getBasename href
 
     # relative link to file
     if fileName.endsWith '.html'
-      fileName.replace '.html', '' # gitit requires link to pages without .md extension
+      baseName = fileName.replace '.html', '' # gitit requires link to pages without .md extension
+      for page in pages
+        if baseName == page.fileBaseName
+          if space == page.space
+            return page.fileNameNew.replace '.md', '' # gitit requires link to pages without .md extension
+          else
+            return page.spacePath.replace '.md', '' # gitit requires link to pages without .md extension
 
-    # link to confluence
     # link to confluence pageId
     else if matches = href.match /.*pageId=(\d+).*/
       pageId = matches[1]
       for page in pages
         if pageId == page.fileBaseName
-          return page.spacePath.replace '.html', '' # gitit requires link to pages without .md extension
+          return page.spacePath.replace '.md', '' # gitit requires link to pages without .md extension
 
     # link outside
     else

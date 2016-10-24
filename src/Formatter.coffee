@@ -145,6 +145,14 @@ class Formatter
       .end()
 
 
+  removeArbitraryElements: ($content) ->
+    $ = @_cheerio
+    $content
+      .find('span').each (i, el) =>
+        $(el).replaceWith $(el).text()
+      .end()
+
+
   ###*
   # Removes arbitrary confluence classes.
   # @param {cheerio obj} $content Content of a file
@@ -154,7 +162,7 @@ class Formatter
     $content
       .find('*').removeClass (i, e) ->
         (
-          e.match(/(^|\s)(confluence\-\S+|external-link)/g) || []
+          e.match(/(^|\s)(confluence\-\S+|external-link|uri|tablesorter-header-inner|odd|even|header)/g) || []
         ).join ' '
       .end()
 
@@ -188,7 +196,7 @@ class Formatter
   # @param {string} cwd Current working directory (where HTML file reside)
   # @return {cheerio obj} Cheerio object
   ###
-  fixLocalLinks: ($content, cwd, pages) ->
+  fixLocalLinks: ($content, space, pages) ->
     $ = @_cheerio
     $content
       .find('a').each (i, el) =>
@@ -199,7 +207,7 @@ class Formatter
           @logger.debug 'No href for link with text "#{text}"'
         else if $(el).hasClass 'createlink'
           $(el).replaceWith $(el).text()
-        else if pageLink = @utils.getLinkToNewPageFile href, pages
+        else if pageLink = @utils.getLinkToNewPageFile href, pages, space
           $(el).attr 'href', pageLink
       .end()
 
@@ -209,11 +217,10 @@ class Formatter
   # @return {cheerio obj} Cheerio object
   ###
   createListFromArray: (itemArray) ->
-    $ = @_cheerio
     $ = @_cheerio.load '<ul>'
     $ul = $('ul')
     for item in itemArray
-      $a = $('<a>').attr('href', item).text(item)
+      $a = $('<a>').attr('href', item).text item.replace '/index', ''
       $li = $('<li>')
       $li.append $a
       $ul.append $li

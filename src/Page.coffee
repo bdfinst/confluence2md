@@ -48,10 +48,11 @@ class Page
     content = @formatter.fixEmptyHeading content
     content = @formatter.fixPreformattedText content
     content = @formatter.fixImageWithinSpan content
+    content = @formatter.removeArbitraryElements content
     content = @formatter.fixArbitraryClasses content
     content = @formatter.fixAttachmentWraper content
     content = @formatter.fixPageLog content
-    content = @formatter.fixLocalLinks content, @utils.getDirname(@path), pages
+    content = @formatter.fixLocalLinks content, @space, pages
     content = @formatter.addPageHeading content, @heading
     @formatter.getHtml content
 

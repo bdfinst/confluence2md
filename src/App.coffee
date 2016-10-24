@@ -49,11 +49,10 @@ class App
     for page in pages
       do (page) =>
         if page.fileName == 'index.html'
-          spaceDir = @_path.basename @_path.dirname page.fileName
-          indexHtmlFiles.push @_path.join spaceDir, 'index.md'
+          indexHtmlFiles.push @_path.join page.space, 'index' # gitit requires link to pages without .md extension
         @convertPage page, dirIn, dirOut, pages
 
-#    @writeGlobalIndexFile indexHtmlFiles, dirOut if not @utils.isFile dirIn #FIXME
+    @writeGlobalIndexFile indexHtmlFiles, dirOut if not @utils.isFile dirIn
     @logger.info 'Conversion done'
 
 
