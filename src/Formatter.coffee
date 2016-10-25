@@ -47,7 +47,12 @@ class Formatter
       $content.find('#content')
         .find('#main-content>.confluenceTable').remove().end() # Removes arbitrary table located on top of index page
     else
-      $content.find('#main-content, .pageSection.group:has(.pageSectionHeader>#attachments)')
+      selector = [
+        '#main-content'
+        '.pageSection.group:has(.pageSectionHeader>#attachments)'
+        '.pageSection.group:has(.pageSectionHeader>#comments)'
+      ]
+      $content.find selector.join ', '
 
 
   ###*
@@ -56,17 +61,14 @@ class Formatter
   # @return {cheerio obj} Cheerio object
   ###
   fixHeadline: ($content) ->
-    $ = @_cheerio
-    $content
-      .find('span.mw-headline').each (i, el) =>
-        $(el).replaceWith $(el).text()
-      .end()
+    @_removeElementLeaveText $content, 'span.aui-icon'
 
 
   addPageHeading: ($content, headingText) ->
     $ = @_cheerio
     h1 = $('<h1>').text headingText
-    $content.prepend h1
+    $content.first().prepend h1
+    $content
 
 
   ###*
@@ -75,11 +77,7 @@ class Formatter
   # @return {cheerio obj} Cheerio object
   ###
   fixIcon: ($content) ->
-    $ = @_cheerio
-    $content
-      .find('span.aui-icon').each (i, el) =>
-        $(el).replaceWith $(el).text()
-      .end()
+    @_removeElementLeaveText $content, 'span.aui-icon'
 
 
   ###*
@@ -146,11 +144,7 @@ class Formatter
 
 
   removeArbitraryElements: ($content) ->
-    $ = @_cheerio
-    $content
-      .find('span').each (i, el) =>
-        $(el).replaceWith $(el).text()
-      .end()
+    @_removeElementLeaveText $content, 'span, .user-mention'
 
 
   ###*
@@ -225,6 +219,20 @@ class Formatter
       $li.append $a
       $ul.append $li
     $ul.end()
+
+
+  ###*
+  # Removes element by selector and leaves only its text content
+  # @param {cheerio obj} $content Content of a file
+  # @param {string} selector Selector of an element
+  # @return {cheerio obj} Cheerio object
+  ###
+  _removeElementLeaveText: ($content, selector) ->
+    $ = @_cheerio
+    $content
+      .find(selector).each (i, el) =>
+        $(el).replaceWith $(el).text()
+      .end()
 
 
 module.exports = Formatter
