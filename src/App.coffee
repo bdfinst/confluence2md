@@ -62,7 +62,7 @@ class App
   # @param {string} dirOut Directory where to place converted MD files
   ###
   convertPage: (page, dirIn, dirOut, pages) ->
-    @logger.info 'Parsing ...' + page.path
+    @logger.info 'Parsing ... ' + page.path
     text = page.getTextToConvert pages
     fullOutFileName = @_path.join dirOut, page.space, page.fileNameNew
 
