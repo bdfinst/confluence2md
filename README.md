@@ -77,6 +77,9 @@ Note that if the converter does not know how to handle a style, HTML to Markdown
   - Select Custom Export if you want to export a subset of pages, or to exclude comments from the export.
 5. Extract zip
 
+**WARNING**  
+Please note that Blog will **NOT** be exported to HTML. You have to copy it manually or export it to XML or PDF. But those format cannot be processed by this utility.
+
 
 # Attribution
 
