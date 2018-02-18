@@ -59,6 +59,30 @@ class Utils
         fullPaths.push @readDirRecursive(fullPath, filesOnly)...
     fullPaths
 
+    
+  ###*
+  # Sanitize a filename, replacing invalid characters with an underscore
+  # @param (string) filename Filename and extension, but not directory component
+  # @return (string)
+  ###
+  sanitizeFilename: (name) ->
+    # Restrictions based on Windows. *nix systems only reserve a subset of this list.
+    #    (space)
+    # <> (less than, greater than)
+    # () (parentheses)
+    # [] (square brackets)
+    # {} (curly braces)
+    # :; (colon variants)
+    # "'`(quote variants)
+    # /  (forward slash)
+    # \  (backslash)
+    # |  (vertical bar or pipe)
+    # ?  (question mark)
+    # *  (asterisk)
+    #    (other punctuation, while not strictly invalid, can lead to errors if copy-pasting filenames into shells or scripts)
+    # Finally, collapse multiple contiguous underscores into a single underscore
+    name.replace(/[\s<>()\[\]{}:;'`"\/\\|?\*~!@#$%^&,]/g, '_').replace(/__+/g, '_')
+
 
   getBasename: (path, extension) ->
     @_path.basename path, extension

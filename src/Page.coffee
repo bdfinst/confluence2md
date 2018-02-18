@@ -19,12 +19,12 @@ class Page
 
 
   getSpacePath: () ->
-    '../' + @space + '/' + @fileNameNew
+    '../' + @utils.sanitizeFilename(@space) + '/' + @fileNameNew
 
 
   getFileNameNew: () ->
     return 'index.md' if @fileName == 'index.html'
-    @heading.replace(/[\s\\/()]/g, '_') + '.md'
+    @utils.sanitizeFilename(@heading) + '.md'
 
 
   getHeading: () ->
