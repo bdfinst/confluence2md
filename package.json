@@ -9,7 +9,7 @@
     "Markdown",
     "Confluence to Markdown"
   ],
-  "bin": "./src/index.coffee",
+  "bin": "./bin/confluence-to-markdown",
   "main": "./src/index.coffee",
   "repository": "git@github.com:meridius/confluence-to-markdown.git",
   "dependencies": {
@@ -29,6 +29,7 @@
   },
   "scripts": {
     "start": "coffee ./src/index.coffee",
+    "build": "coffee --output dist --compile src",
     "test": "NODE_ENV=test mocha -r coffee-script/register --compilers coffee:coffee-script --recursive ./test/*.coffee",
     "test-watch": "NODE_ENV=test mocha -r coffee-script/register --compilers coffee:coffee-script --recursive test/*.coffee --watch"
   }
