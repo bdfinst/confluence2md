@@ -91,7 +91,7 @@ class App
       ' ' + tempInputFile
     out = @_exec command, cwd: fullOutDirName
     @logger.error out.stderr if out.status > 0
-    @_fs.unlink tempInputFile
+    @_fs.unlinkSync tempInputFile
 
 
   ###*
