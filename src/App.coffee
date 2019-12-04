@@ -2,10 +2,10 @@ class App
 
   # @link http://hackage.haskell.org/package/pandoc For options description
   @outputTypesAdd = [
-    'markdown_github' # use GitHub markdown variant
+    'gfm' # use GitHub markdown variant
     'blank_before_header' # insert blank line before header
 #    'mmd_link_attributes' # use MD syntax for images and links instead of HTML
-    'link_attributes' # use MD syntax for images and links instead of HTML
+#    'link_attributes' # use MD syntax for images and links instead of HTML
   ]
 
   @outputTypesRemove = [
