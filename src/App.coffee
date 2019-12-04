@@ -87,8 +87,8 @@ class App
     @_fs.writeFileSync tempInputFile, text, flag: 'w'
     command = 'pandoc -f html ' +
       @pandocOptions +
-      ' -o ' + fullOutFileName +
-      ' ' + tempInputFile
+      ' -o "' + fullOutFileName + '"' +
+      ' "' + tempInputFile + '"'
     out = @_exec command, cwd: fullOutDirName
     @logger.error out.stderr if out.status > 0
     @_fs.unlinkSync tempInputFile
