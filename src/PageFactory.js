@@ -4,28 +4,24 @@
  * DS206: Consider reworking classes to avoid initClass
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-var PageFactory = (function() {
-  let Page = undefined;
+var PageFactory = (function () {
+  let Page = undefined
   PageFactory = class PageFactory {
     static initClass() {
-  
-      Page = require('./Page');
+      Page = require('./Page')
     }
-
 
     constructor(formatter, utils) {
-      this.formatter = formatter;
-      this.utils = utils;
+      this.formatter = formatter
+      this.utils = utils
     }
-
 
     create(fullPath) {
-      return new Page(fullPath, this.formatter, this.utils);
+      return new Page(fullPath, this.formatter, this.utils)
     }
-  };
-  PageFactory.initClass();
-  return PageFactory;
-})();
+  }
+  PageFactory.initClass()
+  return PageFactory
+})()
 
-
-module.exports = PageFactory;
+module.exports = PageFactory
