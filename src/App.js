@@ -53,10 +53,10 @@ class App {
     this.logger = logger
     const typesAdd = App.outputTypesAdd.join('+')
     let typesRemove = App.outputTypesRemove.join('-')
-    typesRemove = typesRemove ? '-' + typesRemove : ''
+    typesRemove = typesRemove ? `-${typesRemove}` : ''
     const types = typesAdd + typesRemove
     this.pandocOptions = [
-      types ? '-t ' + types : '',
+      types ? `-t ${types}` : '',
       App.extraOptions.join(' '),
     ].join(' ')
   }
@@ -70,7 +70,7 @@ class App {
     const filePaths = this.utils.readDirRecursive(dirIn)
     const pages = (() => {
       const result = []
-      for (let filePath of Array.from(filePaths)) {
+      for (const filePath of Array.from(filePaths)) {
         if (filePath.endsWith('.html')) {
           result.push(this.pageFactory.create(filePath))
         }
@@ -79,7 +79,7 @@ class App {
     })()
 
     const indexHtmlFiles = []
-    for (let page of Array.from(pages)) {
+    for (const page of Array.from(pages)) {
       ;(page => {
         if (page.fileName === 'index.html') {
           indexHtmlFiles.push(this._path.join(page.space, 'index')) // gitit requires link to pages without .md extension
@@ -100,7 +100,7 @@ class App {
    * @param {string} dirOut Directory where to place converted MD files
    */
   convertPage(page, dirIn, dirOut, pages) {
-    this.logger.info('Parsing ... ' + page.path)
+    this.logger.info(`Parsing ... ${page.path}`)
     const text = page.getTextToConvert(pages)
     const fullOutFileName = this._path.join(
       dirOut,
@@ -108,7 +108,7 @@ class App {
       page.fileNameNew,
     )
 
-    this.logger.info('Making Markdown ... ' + fullOutFileName)
+    this.logger.info(`Making Markdown ... ${fullOutFileName}`)
     this.writeMarkdownFile(text, fullOutFileName)
     this.utils.copyAssets(
       this.utils.getDirname(page.path),
@@ -130,17 +130,11 @@ class App {
       }
     })
 
-    const tempInputFile = fullOutFileName + '~'
+    const tempInputFile = `${fullOutFileName}~`
     this._fs.writeFileSync(tempInputFile, text, { flag: 'w' })
     const command =
-      'pandoc -f html ' +
-      this.pandocOptions +
-      ' -o "' +
-      fullOutFileName +
-      '"' +
-      ' "' +
-      tempInputFile +
-      '"'
+      `pandoc -f html ${this.pandocOptions} -o "${fullOutFileName}"` +
+      ` "${tempInputFile}"`
     const out = this._exec(command, { cwd: fullOutDirName })
     if (out.status > 0) {
       this.logger.error(out.stderr)

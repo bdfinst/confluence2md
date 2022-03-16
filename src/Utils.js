@@ -21,7 +21,7 @@ class Utils {
   }
 
   mkdirSync(path) {
-    this.logger.debug('Making dir: ' + path)
+    this.logger.debug(`Making dir: ${path}`)
     try {
       return this._fs.mkdirSync(path)
     } catch (e) {
@@ -83,7 +83,7 @@ class Utils {
     if (this.isFile(path)) {
       return [path]
     }
-    for (let fileName of Array.from(this._fs.readdirSync(path))) {
+    for (const fileName of Array.from(this._fs.readdirSync(path))) {
       const fullPath = this._path.join(path, fileName)
       if (this.isFile(fullPath)) {
         fullPaths.push(fullPath)
@@ -138,7 +138,8 @@ class Utils {
   }
 
   getLinkToNewPageFile(href, pages, space) {
-    let matches, page
+    let matches
+    let page
     const fileName = this.getBasename(href)
 
     // relative link to file
@@ -148,9 +149,8 @@ class Utils {
         if (baseName === page.fileBaseName) {
           if (space === page.space) {
             return page.fileNameNew.replace('.md', '') // gitit requires link to pages without .md extension
-          } else {
-            return page.spacePath.replace('.md', '') // gitit requires link to pages without .md extension
           }
+          return page.spacePath.replace('.md', '') // gitit requires link to pages without .md extension
         }
       }
 
@@ -177,7 +177,7 @@ class Utils {
   copyAssets(pathWithHtmlFiles, dirOut) {
     return (() => {
       const result = []
-      for (let asset of ['images', 'attachments']) {
+      for (const asset of ['images', 'attachments']) {
         const assetsDirIn = this._path.join(pathWithHtmlFiles, asset)
         const assetsDirOut = this._path.join(dirOut, asset)
         if (this.isDir(assetsDirIn)) {

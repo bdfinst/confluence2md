@@ -5,7 +5,7 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 var PageFactory = (function () {
-  let Page = undefined
+  let Page
   PageFactory = class PageFactory {
     static initClass() {
       Page = require('./Page')

@@ -1,3 +1,5 @@
+'use strict'
+
 const Bootstrap = require('./Bootstrap')
 
 const pathResource = process.argv[2] // can also be a file

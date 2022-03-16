@@ -24,26 +24,23 @@ class Page {
   }
 
   getSpacePath() {
-    return (
-      '../' + this.utils.sanitizeFilename(this.space) + '/' + this.fileNameNew
-    )
+    return `../${this.utils.sanitizeFilename(this.space)}/${this.fileNameNew}`
   }
 
   getFileNameNew() {
     if (this.fileName === 'index.html') {
       return 'index.md'
     }
-    return this.utils.sanitizeFilename(this.heading) + '.md'
+    return `${this.utils.sanitizeFilename(this.heading)}.md`
   }
 
   getHeading() {
     const title = this.content.find('title').text()
     if (this.fileName === 'index.html') {
       return title
-    } else {
-      const indexName = this.content.find('#breadcrumbs .first').text().trim()
-      return title.replace(indexName + ' : ', '')
     }
+    const indexName = this.content.find('#breadcrumbs .first').text().trim()
+    return title.replace(`${indexName} : `, '')
   }
 
   /**

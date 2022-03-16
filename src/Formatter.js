@@ -40,9 +40,7 @@ class Formatter {
   getHtml($content) {
     const $ = this._cheerio
     let contentHtml = ''
-    $content.each((i, el) => {
-      return (contentHtml += $(el).html())
-    })
+    $content.each((i, el) => (contentHtml += $(el).html()))
     return contentHtml
   }
 
@@ -59,14 +57,13 @@ class Formatter {
         .find('#main-content>.confluenceTable')
         .remove()
         .end() // Removes arbitrary table located on top of index page
-    } else {
-      const selector = [
-        '#main-content',
-        '.pageSection.group:has(.pageSectionHeader>#attachments)',
-        '.pageSection.group:has(.pageSectionHeader>#comments)',
-      ]
-      return $content.find(selector.join(', '))
     }
+    const selector = [
+      '#main-content',
+      '.pageSection.group:has(.pageSectionHeader>#attachments)',
+      '.pageSection.group:has(.pageSectionHeader>#comments)',
+    ]
+    return $content.find(selector.join(', '))
   }
 
   /**
@@ -235,17 +232,18 @@ class Formatter {
     return $content
       .find('a')
       .each((i, el) => {
-        let pageLink, text
+        let pageLink
+        let text
         const href = $(el).attr('href')
         if (href === undefined) {
           text = $(el).text()
           $(el).replaceWith(text)
           return this.logger.debug('No href for link with text "#{text}"')
-        } else if ($(el).hasClass('createlink')) {
+        }
+        if ($(el).hasClass('createlink')) {
           return $(el).replaceWith($(el).text())
-        } else if (
-          (pageLink = this.utils.getLinkToNewPageFile(href, pages, space))
-        ) {
+        }
+        if ((pageLink = this.utils.getLinkToNewPageFile(href, pages, space))) {
           return $(el).attr('href', pageLink)
         }
       })
@@ -259,7 +257,7 @@ class Formatter {
   createListFromArray(itemArray) {
     const $ = this._cheerio.load('<ul>')
     const $ul = $('ul')
-    for (let item of Array.from(itemArray)) {
+    for (const item of Array.from(itemArray)) {
       const $a = $('<a>').attr('href', item).text(item.replace('/index', ''))
       const $li = $('<li>')
       $li.append($a)
@@ -278,9 +276,7 @@ class Formatter {
     const $ = this._cheerio
     return $content
       .find(selector)
-      .each((i, el) => {
-        return $(el).replaceWith($(el).text())
-      })
+      .each((i, el) => $(el).replaceWith($(el).text()))
       .end()
   }
 }

@@ -6,17 +6,17 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 var Bootstrap = (function () {
-  let _fs = undefined
-  let _exec = undefined
-  let _path = undefined
-  let _ncp = undefined
-  let _cheerio = undefined
-  let _mkdirp = undefined
-  let Utils = undefined
-  let Logger = undefined
-  let Formatter = undefined
-  let App = undefined
-  let PageFactory = undefined
+  let _fs
+  let _exec
+  let _path
+  let _ncp
+  let _cheerio
+  let _mkdirp
+  let Utils
+  let Logger
+  let Formatter
+  let App
+  let PageFactory
   Bootstrap = class Bootstrap {
     static initClass() {
       _fs = require('fs')
@@ -59,8 +59,8 @@ var Bootstrap = (function () {
         logger,
       )
 
-      logger.info('Using source: ' + pathResource)
-      logger.info('Using destination: ' + pathResult)
+      logger.info(`Using source: ${pathResource}`)
+      logger.info(`Using destination: ${pathResult}`)
 
       return app.convert(pathResource, pathResult)
     }
