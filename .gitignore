@@ -2,4 +2,6 @@ data/
 /node_modules/
 /.idea/
 *.map
-*.js
+.history
+.DS_Store
+.eslintcache

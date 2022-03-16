@@ -1,0 +1,99 @@
+{
+  "extends": [
+    "airbnb",
+    "prettier",
+    "plugin:node/recommended",
+    "plugin:promise/recommended"
+  ],
+  "plugins": [
+    "prettier",
+    "no-floating-promise",
+    "promise"
+  ],
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "overrides": [{
+    "files": [
+      "**/*.js"
+    ]
+  }],
+  "ignorePatterns": [
+    "/test/**/*.js"
+  ],
+  "rules": {
+    "strict": ["error", "global"],
+    "promise/prefer-await-to-then": "warn",
+    "promise/prefer-await-to-callbacks": "warn",
+    "no-floating-promise/no-floating-promise": 2,
+    "node/no-unpublished-require": [
+      "error",
+      {
+        "tryExtensions": [
+          ".js",
+          ".json",
+          ".node"
+        ]
+      }
+    ],
+    "no-var": "error",
+    "prefer-const": [
+      "error",
+      {
+        "destructuring": "any",
+        "ignoreReadBeforeAssign": false
+      }
+    ],
+    "eqeqeq": [
+      "error",
+      "always"
+    ],
+    "radix": "error",
+    "semi": [
+      2,
+      "never"
+    ],
+    "quotes": [
+      2,
+      "single",
+      "avoid-escape"
+    ],
+    "prettier/prettier": [
+      "error",
+      {
+        "semi": false
+      }
+    ],
+    "prefer-template": 2,
+    "import/no-nodejs-modules": 0,
+    "import/no-commonjs": 0,
+    "no-underscore-dangle": 0,
+    "import/imports-first": [
+      "error",
+      "absolute-first"
+    ],
+    "import/newline-after-import": "error",
+    "import/no-cycle": [
+      2,
+      {
+        "maxDepth": 1
+      }
+    ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
+    ]
+  },
+  "globals": {
+    "window": true,
+    "document": true,
+    "localStorage": true,
+    "FormData": true,
+    "FileReader": true,
+    "Blob": true,
+    "navigator": true
+  }
+}
