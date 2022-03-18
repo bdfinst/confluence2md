@@ -11,17 +11,15 @@ class Utils {
    * @param {fs} _fs Required lib
    * @param {path} _path Required lib
    * @param {ncp} _ncp Required lib
-   * @param {Logger} logger My lib
    */
-  constructor(_fs, _path, _ncp, logger) {
+  constructor(_fs, _path, _ncp) {
     this._fs = _fs
     this._path = _path
     this._ncp = _ncp
-    this.logger = logger
   }
 
   mkdirSync(path) {
-    this.logger.debug(`Making dir: ${path}`)
+    console.debug(`Making dir: ${path}`)
     try {
       return this._fs.mkdirSync(path)
     } catch (e) {

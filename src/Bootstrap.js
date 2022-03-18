@@ -13,7 +13,6 @@ var Bootstrap = (function () {
   let _cheerio
   let _mkdirp
   let Utils
-  let Logger
   let Formatter
   let App
   let PageFactory
@@ -27,7 +26,6 @@ var Bootstrap = (function () {
       _mkdirp = require('mkdirp')
 
       Utils = require('./Utils')
-      Logger = require('./Logger')
       Formatter = require('./Formatter')
       App = require('./App')
       PageFactory = require('./PageFactory')
@@ -44,9 +42,8 @@ var Bootstrap = (function () {
       pathResource = _path.resolve(pathResource)
       pathResult = _path.resolve(pathResult)
 
-      const logger = new Logger(Logger.INFO)
-      const utils = new Utils(_fs, _path, _ncp, logger)
-      const formatter = new Formatter(_cheerio, utils, logger)
+      const utils = new Utils(_fs, _path, _ncp)
+      const formatter = new Formatter(_cheerio, utils)
       const pageFactory = new PageFactory(formatter, utils)
       const app = new App(
         _fs,
@@ -56,11 +53,10 @@ var Bootstrap = (function () {
         utils,
         formatter,
         pageFactory,
-        logger,
       )
 
-      logger.info(`Using source: ${pathResource}`)
-      logger.info(`Using destination: ${pathResult}`)
+      console.log(`Using source: ${pathResource}`)
+      console.log(`Using destination: ${pathResult}`)
 
       return app.convert(pathResource, pathResult)
     }

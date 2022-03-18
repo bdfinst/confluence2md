@@ -31,18 +31,8 @@ class App {
    * @param {Utils} utils My lib
    * @param {Formatter} formatter My lib
    * @param {PageFactory} pageFactory My lib
-   * @param {Logger} logger My lib
    */
-  constructor(
-    _fs,
-    _exec,
-    _path,
-    _mkdirp,
-    utils,
-    formatter,
-    pageFactory,
-    logger,
-  ) {
+  constructor(_fs, _exec, _path, _mkdirp, utils, formatter, pageFactory) {
     this._fs = _fs
     this._exec = _exec
     this._path = _path
@@ -50,7 +40,6 @@ class App {
     this.utils = utils
     this.formatter = formatter
     this.pageFactory = pageFactory
-    this.logger = logger
     const typesAdd = App.outputTypesAdd.join('+')
     let typesRemove = App.outputTypesRemove.join('-')
     typesRemove = typesRemove ? `-${typesRemove}` : ''
@@ -91,7 +80,7 @@ class App {
     if (!this.utils.isFile(dirIn)) {
       this.writeGlobalIndexFile(indexHtmlFiles, dirOut)
     }
-    return this.logger.info('Conversion done')
+    return console.log('Conversion done')
   }
 
   /**
@@ -100,7 +89,7 @@ class App {
    * @param {string} dirOut Directory where to place converted MD files
    */
   convertPage(page, dirIn, dirOut, pages) {
-    this.logger.info(`Parsing ... ${page.path}`)
+    console.log(`Parsing ... ${page.path}`)
     const text = page.getTextToConvert(pages)
     const fullOutFileName = this._path.join(
       dirOut,
@@ -108,13 +97,13 @@ class App {
       page.fileNameNew,
     )
 
-    this.logger.info(`Making Markdown ... ${fullOutFileName}`)
+    console.log(`Making Markdown ... ${fullOutFileName}`)
     this.writeMarkdownFile(text, fullOutFileName)
     this.utils.copyAssets(
       this.utils.getDirname(page.path),
       this.utils.getDirname(fullOutFileName),
     )
-    return this.logger.info('Done\n')
+    return console.log('Done\n')
   }
 
   /**
@@ -124,9 +113,9 @@ class App {
    */
   writeMarkdownFile(text, fullOutFileName) {
     const fullOutDirName = this.utils.getDirname(fullOutFileName)
-    this._mkdirp.sync(fullOutDirName, function (error) {
+    this._mkdirp.sync(fullOutDirName, error => {
       if (error) {
-        return this.logger.error('Unable to create directory #{fullOutDirName}')
+        return console.error('Unable to create directory #{fullOutDirName}')
       }
     })
 
@@ -137,7 +126,7 @@ class App {
       ` "${tempInputFile}"`
     const out = this._exec(command, { cwd: fullOutDirName })
     if (out.status > 0) {
-      this.logger.error(out.stderr)
+      console.error(out.stderr)
     }
     return this._fs.unlinkSync(tempInputFile)
   }

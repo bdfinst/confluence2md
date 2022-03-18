@@ -9,12 +9,10 @@ class Formatter {
   /**
    * @param {cheerio} _cheerio Required lib
    * @param {Utils} utils My lib
-   * @param {Logger} logger My lib
    */
-  constructor(_cheerio, utils, logger) {
+  constructor(_cheerio, utils) {
     this._cheerio = _cheerio
     this.utils = utils
-    this.logger = logger
   }
 
   /**
@@ -238,7 +236,7 @@ class Formatter {
         if (href === undefined) {
           text = $(el).text()
           $(el).replaceWith(text)
-          return this.logger.debug('No href for link with text "#{text}"')
+          return console.debug('No href for link with text "#{text}"')
         }
         if ($(el).hasClass('createlink')) {
           return $(el).replaceWith($(el).text())
