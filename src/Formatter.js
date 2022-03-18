@@ -1,3 +1,6 @@
+/* eslint-disable no-useless-escape */
+/* eslint-disable no-return-assign */
+/* eslint-disable consistent-return */
 /* eslint-disable no-console */
 /* eslint-disable class-methods-use-this */
 
@@ -143,7 +146,7 @@ class Formatter {
         const data = $(el).data('syntaxhighlighterParams')
         $(el).attr('style', data)
         const styles = $(el).css()
-        const brush = styles != null ? styles.brush : undefined
+        const brush = styles !== null ? styles.brush : undefined
         $(el).removeAttr('class')
         if (brush) {
           return $(el).addClass(brush)
@@ -179,15 +182,11 @@ class Formatter {
    * @return {cheerio obj} Cheerio object
    */
   fixArbitraryClasses(content) {
+    const regex =
+      /(^|\s)(confluence\-\S+|external-link|uri|tablesorter-header-inner|odd|even|header)/g
     return content
       .find('*')
-      .removeClass((i, e) =>
-        (
-          e.match(
-            /(^|\s)(confluence\-\S+|external-link|uri|tablesorter-header-inner|odd|even|header)/g,
-          ) || []
-        ).join(' '),
-      )
+      .removeClass((i, e) => (e.match(regex) || []).join(' '))
       .end()
   }
 

@@ -1,3 +1,6 @@
+/* eslint-disable no-console */
+/* eslint-disable no-useless-escape */
+/* eslint-disable consistent-return */
 /* eslint-disable class-methods-use-this */
 
 'use strict'
@@ -34,12 +37,9 @@ class Utils {
    * @return {bool}
    */
   isFile(filePath, cwd = '') {
-    let stat
-
     const pathFull = path.resolve(cwd, filePath)
-    return (
-      fs.existsSync(pathFull) && (stat = fs.statSync(pathFull)) && stat.isFile()
-    )
+    const stat = fs.existsSync(pathFull) ? fs.statSync(pathFull) : undefined
+    return stat && stat.isFile()
   }
 
   /**
@@ -48,17 +48,10 @@ class Utils {
    * @param {string|void} cwd Current working directory against which the path is built.
    * @return {bool}
    */
-  isDir(dirPath, cwd) {
-    let stat
-    if (cwd == null) {
-      cwd = ''
-    }
+  isDir(dirPath, cwd = '') {
     const pathFull = path.resolve(cwd, dirPath)
-    return (
-      fs.existsSync(pathFull) &&
-      (stat = fs.statSync(pathFull)) &&
-      stat.isDirectory()
-    )
+    const stat = fs.existsSync(pathFull) ? fs.statSync(pathFull) : undefined
+    return stat && stat.isDirectory()
   }
 
   /**
@@ -72,7 +65,8 @@ class Utils {
     if (this.isFile(fromPath)) {
       return [fromPath]
     }
-    for (const fileName of Array.from(fs.readdirSync(fromPath))) {
+
+    fs.readdirSync(fromPath).forEach(fileName => {
       const fullPath = path.join(fromPath, fileName)
       if (this.isFile(fullPath)) {
         fullPaths.push(fullPath)
@@ -84,7 +78,7 @@ class Utils {
           ...Array.from(this.readDirRecursive(fullPath, filesOnly) || []),
         )
       }
-    }
+    })
     return fullPaths
   }
 
@@ -127,30 +121,31 @@ class Utils {
   }
 
   getLinkToNewPageFile(href, pages, space) {
-    let matches
-    let page
     const fileName = this.getBasename(href)
+    const pageRegex = /.*pageId=(\d+).*/
+    const matches = href.match(pageRegex)
 
     // relative link to file
     if (fileName.endsWith('.html')) {
       const baseName = fileName.replace('.html', '') //  requires link to pages without .md extension
-      for (page of Array.from(pages)) {
+
+      pages.forEach(page => {
         if (baseName === page.fileBaseName) {
           if (space === page.space) {
             return page.fileNameNew.replace('.md', '') //  requires link to pages without .md extension
           }
           return page.spacePath.replace('.md', '') //  requires link to pages without .md extension
         }
-      }
+      })
 
       // link to confluence pageId
-    } else if ((matches = href.match(/.*pageId=(\d+).*/))) {
+    } else if (matches) {
       const pageId = matches[1]
-      for (page of Array.from(pages)) {
+      pages.forEach(page => {
         if (pageId === page.fileBaseName) {
           return page.spacePath.replace('.md', '') //  requires link to pages without .md extension
         }
-      }
+      })
 
       // link outside
     } else {
@@ -164,19 +159,18 @@ class Utils {
    * @param {string} dirOut Directory where to place converted MD files
    */
   copyAssets(pathWithHtmlFiles, dirOut) {
-    return (() => {
-      const result = []
-      for (const asset of ['images', 'attachments']) {
-        const assetsDirIn = path.join(pathWithHtmlFiles, asset)
-        const assetsDirOut = path.join(dirOut, asset)
-        if (this.isDir(assetsDirIn)) {
-          result.push(ncp(assetsDirIn, assetsDirOut))
-        } else {
-          result.push(undefined)
-        }
+    const result = []
+    const assets = ['images', 'attachments']
+    assets.forEach(asset => {
+      const assetsDirIn = path.join(pathWithHtmlFiles, asset)
+      const assetsDirOut = path.join(dirOut, asset)
+      if (this.isDir(assetsDirIn)) {
+        result.push(ncp(assetsDirIn, assetsDirOut))
+      } else {
+        result.push(undefined)
       }
-      return result
-    })()
+    })
+    return result
   }
 }
 

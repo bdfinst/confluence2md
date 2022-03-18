@@ -56,23 +56,21 @@ class App {
 
     const pages = (() => {
       const result = []
-      for (const filePath of Array.from(filePaths)) {
+      filePaths.forEach(filePath => {
         if (filePath.endsWith('.html')) {
           result.push(pageFactory.create(filePath))
         }
-      }
+      })
       return result
     })()
 
     const indexHtmlFiles = []
-    for (const page of Array.from(pages)) {
-      ;(page => {
-        if (page.fileName === 'index.html') {
-          indexHtmlFiles.push(path.join(page.space, 'index')) //  requires link to pages without .md extension
-        }
-        return this.convertPage(page, dirIn, dirOut, pages)
-      })(page)
-    }
+    pages.forEach(page => {
+      if (page.fileName === 'index.html') {
+        indexHtmlFiles.push(path.join(page.space, 'index')) //  requires link to pages without .md extension
+      }
+      return this.convertPage(page, dirIn, dirOut, pages)
+    })
 
     if (!utils.isFile(dirIn)) {
       this.writeGlobalIndexFile(indexHtmlFiles, dirOut)
