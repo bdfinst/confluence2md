@@ -1,3 +1,12 @@
+/* eslint-disable no-console */
+/* eslint-disable class-methods-use-this */
+
+'use strict'
+
+const cheerio = require('cheerio')
+const Utils = require('./Utils')
+
+let utils
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -6,13 +15,8 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 class Formatter {
-  /**
-   * @param {cheerio} _cheerio Required lib
-   * @param {Utils} utils My lib
-   */
-  constructor(_cheerio, utils) {
-    this._cheerio = _cheerio
-    this.utils = utils
+  constructor() {
+    utils = new Utils()
   }
 
   /**
@@ -20,25 +24,25 @@ class Formatter {
    * @return {cheerio obj} Root object of a text
    */
   load(text) {
-    return this._cheerio.load(text)
+    return cheerio.load(text)
   }
 
   /**
-   * @param {cheerio obj} $content Content of a file
+   * @param {cheerio obj} content Content of a file
    * @return {string} Textual representation of a content
    */
-  getText($content) {
-    return $content.text()
+  getText(content) {
+    return content.text()
   }
 
   /**
-   * @param {cheerio obj} $content Content of a file
+   * @param {cheerio obj} content Content of a file
    * @return {string} HTML representation of a content
    */
-  getHtml($content) {
-    const $ = this._cheerio
+  getHtml(content) {
     let contentHtml = ''
-    $content.each((i, el) => (contentHtml += $(el).html()))
+
+    content.each((i, el) => (contentHtml += cheerio(el).html()))
     return contentHtml
   }
 
@@ -48,9 +52,9 @@ class Formatter {
    * @see load() You need to load the content first.
    * @param {string} fileName Name of a file
    */
-  getRightContentByFileName($content, fileName) {
+  getRightContentByFileName(content, fileName) {
     if (fileName === 'index.html') {
-      return $content
+      return content
         .find('#content')
         .find('#main-content>.confluenceTable')
         .remove()
@@ -61,42 +65,42 @@ class Formatter {
       '.pageSection.group:has(.pageSectionHeader>#attachments)',
       '.pageSection.group:has(.pageSectionHeader>#comments)',
     ]
-    return $content.find(selector.join(', '))
+    return content.find(selector.join(', '))
   }
 
   /**
    * Removes span inside of a h1 tag.
-   * @param {cheerio obj} $content Content of a file
+   * @param {cheerio obj} content Content of a file
    * @return {cheerio obj} Cheerio object
    */
-  fixHeadline($content) {
-    return this._removeElementLeaveText($content, 'span.aui-icon')
+  fixHeadline(content) {
+    return this._removeElementLeaveText(content, 'span.aui-icon')
   }
 
-  addPageHeading($content, headingText) {
-    const $ = this._cheerio
+  addPageHeading(content, headingText) {
+    const $ = cheerio
     const h1 = $('<h1>').text(headingText)
-    $content.first().prepend(h1)
-    return $content
+    content.first().prepend(h1)
+    return content
   }
 
   /**
    * Removes redundant icon
-   * @param {cheerio obj} $content Content of a file
+   * @param {cheerio obj} content Content of a file
    * @return {cheerio obj} Cheerio object
    */
-  fixIcon($content) {
-    return this._removeElementLeaveText($content, 'span.aui-icon')
+  fixIcon(content) {
+    return this._removeElementLeaveText(content, 'span.aui-icon')
   }
 
   /**
    * Removes empty link
-   * @param {cheerio obj} $content Content of a file
+   * @param {cheerio obj} content Content of a file
    * @return {cheerio obj} Cheerio object
    */
-  fixEmptyLink($content) {
-    const $ = this._cheerio
-    return $content
+  fixEmptyLink(content) {
+    const $ = cheerio
+    return content
       .find('a')
       .each((i, el) => {
         if (
@@ -111,12 +115,12 @@ class Formatter {
 
   /**
    * Removes empty heading
-   * @param {cheerio obj} $content Content of a file
+   * @param {cheerio obj} content Content of a file
    * @return {cheerio obj} Cheerio object
    */
-  fixEmptyHeading($content) {
-    const $ = this._cheerio
-    return $content
+  fixEmptyHeading(content) {
+    const $ = cheerio
+    return content
       .find(':header')
       .each((i, el) => {
         if ($(el).text().trim().length === 0) {
@@ -128,12 +132,12 @@ class Formatter {
 
   /**
    * Gives the right class to syntaxhighlighter
-   * @param {cheerio obj} $content Content of a file
+   * @param {cheerio obj} content Content of a file
    * @return {cheerio obj} Cheerio object
    */
-  fixPreformattedText($content) {
-    const $ = this._cheerio
-    return $content
+  fixPreformattedText(content) {
+    const $ = cheerio
+    return content
       .find('pre')
       .each((i, el) => {
         const data = $(el).data('syntaxhighlighterParams')
@@ -150,12 +154,12 @@ class Formatter {
 
   /**
    * Fixes 'p > a > span > img' for which no image was created.
-   * @param {cheerio obj} $content Content of a file
+   * @param {cheerio obj} content Content of a file
    * @return {cheerio obj} Cheerio object
    */
-  fixImageWithinSpan($content) {
-    const $ = this._cheerio
-    return $content
+  fixImageWithinSpan(content) {
+    const $ = cheerio
+    return content
       .find('span:has(img)')
       .each((i, el) => {
         if ($(el).text().trim().length === 0) {
@@ -165,17 +169,17 @@ class Formatter {
       .end()
   }
 
-  removeArbitraryElements($content) {
-    return this._removeElementLeaveText($content, 'span, .user-mention')
+  removeArbitraryElements(content) {
+    return this._removeElementLeaveText(content, 'span, .user-mention')
   }
 
   /**
    * Removes arbitrary confluence classes.
-   * @param {cheerio obj} $content Content of a file
+   * @param {cheerio obj} content Content of a file
    * @return {cheerio obj} Cheerio object
    */
-  fixArbitraryClasses($content) {
-    return $content
+  fixArbitraryClasses(content) {
+    return content
       .find('*')
       .removeClass((i, e) =>
         (
@@ -189,11 +193,11 @@ class Formatter {
 
   /**
    * Removes arbitrary confluence elements for attachments.
-   * @param {cheerio obj} $content Content of a file
+   * @param {cheerio obj} content Content of a file
    * @return {cheerio obj} Cheerio object
    */
-  fixAttachmentWraper($content) {
-    return $content
+  fixAttachmentWrapper(content) {
+    return content
       .find('.attachment-buttons')
       .remove()
       .end() // action buttons for attachments
@@ -207,11 +211,11 @@ class Formatter {
 
   /**
    * Removes arbitrary confluence elements for page log.
-   * @param {cheerio obj} $content Content of a file
+   * @param {cheerio obj} content Content of a file
    * @return {cheerio obj} Cheerio object
    */
-  fixPageLog($content) {
-    return $content
+  fixPageLog(content) {
+    return content
       .find('[id$="Recentspaceactivity"], [id$=Spacecontributors]')
       .parent()
       .remove()
@@ -221,16 +225,15 @@ class Formatter {
 
   /**
    * Changes links to local HTML files to generated MD files.
-   * @param {cheerio obj} $content Content of a file
+   * @param {cheerio obj} content Content of a file
    * @param {string} cwd Current working directory (where HTML file reside)
    * @return {cheerio obj} Cheerio object
    */
-  fixLocalLinks($content, space, pages) {
-    const $ = this._cheerio
-    return $content
+  fixLocalLinks(content, space, pages) {
+    const $ = cheerio
+    return content
       .find('a')
       .each((i, el) => {
-        let pageLink
         let text
         const href = $(el).attr('href')
         if (href === undefined) {
@@ -241,7 +244,9 @@ class Formatter {
         if ($(el).hasClass('createlink')) {
           return $(el).replaceWith($(el).text())
         }
-        if ((pageLink = this.utils.getLinkToNewPageFile(href, pages, space))) {
+
+        const pageLink = utils.getLinkToNewPageFile(href, pages, space)
+        if (pageLink) {
           return $(el).attr('href', pageLink)
         }
       })
@@ -253,26 +258,30 @@ class Formatter {
    * @return {cheerio obj} Cheerio object
    */
   createListFromArray(itemArray) {
-    const $ = this._cheerio.load('<ul>')
-    const $ul = $('ul')
-    for (const item of Array.from(itemArray)) {
-      const $a = $('<a>').attr('href', item).text(item.replace('/index', ''))
-      const $li = $('<li>')
-      $li.append($a)
-      $ul.append($li)
-    }
-    return $ul.end()
+    const cheerioList = cheerio.load('<ul>')
+    const ulTag = cheerioList('ul')
+
+    itemArray.forEach(item => {
+      const aTag = cheerioList('<a>')
+        .attr('href', item)
+        .text(item.replace('/index', ''))
+      const liTag = cheerioList('<li>')
+      liTag.append(aTag)
+      ulTag.append(liTag)
+    })
+
+    return ulTag.end()
   }
 
   /**
    * Removes element by selector and leaves only its text content
-   * @param {cheerio obj} $content Content of a file
+   * @param {cheerio obj} content Content of a file
    * @param {string} selector Selector of an element
    * @return {cheerio obj} Cheerio object
    */
-  _removeElementLeaveText($content, selector) {
-    const $ = this._cheerio
-    return $content
+  _removeElementLeaveText(content, selector) {
+    const $ = cheerio
+    return content
       .find(selector)
       .each((i, el) => $(el).replaceWith($(el).text()))
       .end()

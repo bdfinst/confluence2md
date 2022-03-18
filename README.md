@@ -38,8 +38,8 @@ npm run start <pathResource> <pathResult>
 - images and other inserted attachments are linked to generated markdown
   - whole `images` and `attachments` directories are copied to resulting directory
     - there is no checking done whether perticular file/image is used or not
-- markdown links to internal pages are generated without the trailing **.md** extension to comply to [gitit] expectations
-  - this can be changed by finding all occurances of `gitit requires link to pages without .md extension` in the `.coffee` files and adding the extension there.
+- markdown links to internal pages are generated without the trailing **.md** extension to comply to [] expectations
+  - this can be changed by finding all occurances of ` requires link to pages without .md extension` in the `.coffee` files and adding the extension there.
   - or you can send a PR ;)
 - the pandoc utility can accept quite a few options to alter its default behavior
   - those can be passed to it by adding them to `@outputTypesAdd`, `@outputTypesRemove`, `@extraOptions` properties in the [`App.coffee`](src/App.coffee) file
@@ -81,4 +81,4 @@ Thanks to Eric White for a starting point.
 
 [pandoc]: http://pandoc.org/installing.html
 [pandoc-options]: http://hackage.haskell.org/package/pandoc
-[gitit]: https://github.com/jgm/gitit/
+[]: https://github.com/jgm//

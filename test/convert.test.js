@@ -20,4 +20,4 @@ it('should return a converted page', () => {
   const files = convert(path)
 
   expect(files).toHaveLength(5)
-});
+})

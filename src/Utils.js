@@ -1,3 +1,11 @@
+/* eslint-disable class-methods-use-this */
+
+'use strict'
+
+const fs = require('fs')
+const path = require('path')
+const ncp = require('ncp')
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -7,21 +15,11 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 class Utils {
-  /**
-   * @param {fs} _fs Required lib
-   * @param {path} _path Required lib
-   * @param {ncp} _ncp Required lib
-   */
-  constructor(_fs, _path, _ncp) {
-    this._fs = _fs
-    this._path = _path
-    this._ncp = _ncp
-  }
-
-  mkdirSync(path) {
-    console.debug(`Making dir: ${path}`)
+  mkdirSync(filePath) {
+    this.filePath = filePath
+    console.debug(`Making dir: ${this.filePath}`)
     try {
-      return this._fs.mkdirSync(path)
+      fs.mkdirSync(this.filePath)
     } catch (e) {
       if (e.code !== 'EEXIST') {
         throw e
@@ -35,16 +33,12 @@ class Utils {
    * @param {string|void} cwd Current working directory against which the path is built.
    * @return {bool}
    */
-  isFile(filePath, cwd) {
+  isFile(filePath, cwd = '') {
     let stat
-    if (cwd == null) {
-      cwd = ''
-    }
-    const pathFull = this._path.resolve(cwd, filePath)
+
+    const pathFull = path.resolve(cwd, filePath)
     return (
-      this._fs.existsSync(pathFull) &&
-      (stat = this._fs.statSync(pathFull)) &&
-      stat.isFile()
+      fs.existsSync(pathFull) && (stat = fs.statSync(pathFull)) && stat.isFile()
     )
   }
 
@@ -59,10 +53,10 @@ class Utils {
     if (cwd == null) {
       cwd = ''
     }
-    const pathFull = this._path.resolve(cwd, dirPath)
+    const pathFull = path.resolve(cwd, dirPath)
     return (
-      this._fs.existsSync(pathFull) &&
-      (stat = this._fs.statSync(pathFull)) &&
+      fs.existsSync(pathFull) &&
+      (stat = fs.statSync(pathFull)) &&
       stat.isDirectory()
     )
   }
@@ -73,16 +67,13 @@ class Utils {
    * @param {bool|void} filesOnly Whether to return only files.
    * @return {array}
    */
-  readDirRecursive(path, filesOnly) {
-    if (filesOnly == null) {
-      filesOnly = true
-    }
+  readDirRecursive(fromPath, filesOnly = true) {
     const fullPaths = []
-    if (this.isFile(path)) {
-      return [path]
+    if (this.isFile(fromPath)) {
+      return [fromPath]
     }
-    for (const fileName of Array.from(this._fs.readdirSync(path))) {
-      const fullPath = this._path.join(path, fileName)
+    for (const fileName of Array.from(fs.readdirSync(fromPath))) {
+      const fullPath = path.join(fromPath, fileName)
       if (this.isFile(fullPath)) {
         fullPaths.push(fullPath)
       } else {
@@ -123,16 +114,16 @@ class Utils {
       .replace(/__+/g, '_')
   }
 
-  getBasename(path, extension) {
-    return this._path.basename(path, extension)
+  getBasename(fromPath, extension) {
+    return path.basename(fromPath, extension)
   }
 
-  getDirname(path) {
-    return this._path.dirname(path)
+  getDirname(fromPath) {
+    return path.dirname(fromPath)
   }
 
-  readFile(path) {
-    return this._fs.readFileSync(path, 'utf8')
+  readFile(fromPath) {
+    return fs.readFileSync(fromPath, 'utf8')
   }
 
   getLinkToNewPageFile(href, pages, space) {
@@ -142,13 +133,13 @@ class Utils {
 
     // relative link to file
     if (fileName.endsWith('.html')) {
-      const baseName = fileName.replace('.html', '') // gitit requires link to pages without .md extension
+      const baseName = fileName.replace('.html', '') //  requires link to pages without .md extension
       for (page of Array.from(pages)) {
         if (baseName === page.fileBaseName) {
           if (space === page.space) {
-            return page.fileNameNew.replace('.md', '') // gitit requires link to pages without .md extension
+            return page.fileNameNew.replace('.md', '') //  requires link to pages without .md extension
           }
-          return page.spacePath.replace('.md', '') // gitit requires link to pages without .md extension
+          return page.spacePath.replace('.md', '') //  requires link to pages without .md extension
         }
       }
 
@@ -157,7 +148,7 @@ class Utils {
       const pageId = matches[1]
       for (page of Array.from(pages)) {
         if (pageId === page.fileBaseName) {
-          return page.spacePath.replace('.md', '') // gitit requires link to pages without .md extension
+          return page.spacePath.replace('.md', '') //  requires link to pages without .md extension
         }
       }
 
@@ -176,10 +167,10 @@ class Utils {
     return (() => {
       const result = []
       for (const asset of ['images', 'attachments']) {
-        const assetsDirIn = this._path.join(pathWithHtmlFiles, asset)
-        const assetsDirOut = this._path.join(dirOut, asset)
+        const assetsDirIn = path.join(pathWithHtmlFiles, asset)
+        const assetsDirOut = path.join(dirOut, asset)
         if (this.isDir(assetsDirIn)) {
-          result.push(this._ncp(assetsDirIn, assetsDirOut))
+          result.push(ncp(assetsDirIn, assetsDirOut))
         } else {
           result.push(undefined)
         }
