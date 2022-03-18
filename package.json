@@ -40,7 +40,6 @@
     "start": "node ./src/index.js",
     "test": "jest --runInBand --coverage --config ./jest.config.json",
     "test:ci": "jest  --config ./jest.config.json --watch",
-    "test-watch": "NODE_ENV=test mocha  --recursive test/*.js --watch",
     "format:fix": "prettier --write '**/*.{js,yaml,json,md}'",
     "format": "prettier --check '**/*.{js,yaml,json,md}'",
     "lint:fix": "eslint --fix --cache --ext .js .",
