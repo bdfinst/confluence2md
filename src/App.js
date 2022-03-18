@@ -1,11 +1,19 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * DS206: Consider reworking classes to avoid initClass
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
+/* eslint-disable no-console */
+
+'use strict'
+
+const fs = require('fs')
+const exec = require('sync-exec')
+const path = require('path')
+const mkdirp = require('mkdirp')
+const Utils = require('./Utils')
+const Formatter = require('./Formatter')
+const PageFactory = require('./PageFactory')
+
+let formatter
+let utils
+let pageFactory
+
 class App {
   static initClass() {
     // @link http://hackage.haskell.org/package/pandoc For options description
@@ -23,23 +31,11 @@ class App {
     ]
   }
 
-  /**
-   * @param {fs} _fs Required lib
-   * @param {sync-exec} _exec Required lib
-   * @param {path} _path Required lib
-   * @param {mkdirp} _mkdirp Required lib
-   * @param {Utils} utils My lib
-   * @param {Formatter} formatter My lib
-   * @param {PageFactory} pageFactory My lib
-   */
-  constructor(_fs, _exec, _path, _mkdirp, utils, formatter, pageFactory) {
-    this._fs = _fs
-    this._exec = _exec
-    this._path = _path
-    this._mkdirp = _mkdirp
-    this.utils = utils
-    this.formatter = formatter
-    this.pageFactory = pageFactory
+  constructor() {
+    formatter = new Formatter()
+    utils = new Utils()
+    pageFactory = new PageFactory()
+
     const typesAdd = App.outputTypesAdd.join('+')
     let typesRemove = App.outputTypesRemove.join('-')
     typesRemove = typesRemove ? `-${typesRemove}` : ''
@@ -56,12 +52,13 @@ class App {
    * @param {string} dirOut Directory where to place converted MD files
    */
   convert(dirIn, dirOut) {
-    const filePaths = this.utils.readDirRecursive(dirIn)
+    const filePaths = utils.readDirRecursive(dirIn)
+
     const pages = (() => {
       const result = []
       for (const filePath of Array.from(filePaths)) {
         if (filePath.endsWith('.html')) {
-          result.push(this.pageFactory.create(filePath))
+          result.push(pageFactory.create(filePath))
         }
       }
       return result
@@ -71,13 +68,13 @@ class App {
     for (const page of Array.from(pages)) {
       ;(page => {
         if (page.fileName === 'index.html') {
-          indexHtmlFiles.push(this._path.join(page.space, 'index')) // gitit requires link to pages without .md extension
+          indexHtmlFiles.push(path.join(page.space, 'index')) //  requires link to pages without .md extension
         }
         return this.convertPage(page, dirIn, dirOut, pages)
       })(page)
     }
 
-    if (!this.utils.isFile(dirIn)) {
+    if (!utils.isFile(dirIn)) {
       this.writeGlobalIndexFile(indexHtmlFiles, dirOut)
     }
     return console.log('Conversion done')
@@ -91,44 +88,40 @@ class App {
   convertPage(page, dirIn, dirOut, pages) {
     console.log(`Parsing ... ${page.path}`)
     const text = page.getTextToConvert(pages)
-    const fullOutFileName = this._path.join(
-      dirOut,
-      page.space,
-      page.fileNameNew,
-    )
+    const fullOutFileName = path.join(dirOut, page.space, page.fileNameNew)
 
     console.log(`Making Markdown ... ${fullOutFileName}`)
     this.writeMarkdownFile(text, fullOutFileName)
-    this.utils.copyAssets(
-      this.utils.getDirname(page.path),
-      this.utils.getDirname(fullOutFileName),
+    utils.copyAssets(
+      utils.getDirname(page.path),
+      utils.getDirname(fullOutFileName),
     )
     return console.log('Done\n')
   }
 
   /**
-   * @param {string} text Makdown content of file
+   * @param {string} text Markdown content of file
    * @param {string} fullOutFileName Absolute path to resulting file
    * @return {string} Absolute path to created MD file
    */
   writeMarkdownFile(text, fullOutFileName) {
-    const fullOutDirName = this.utils.getDirname(fullOutFileName)
-    this._mkdirp.sync(fullOutDirName, error => {
+    const fullOutDirName = utils.getDirname(fullOutFileName)
+    mkdirp.sync(fullOutDirName, error => {
       if (error) {
         return console.error('Unable to create directory #{fullOutDirName}')
       }
     })
 
     const tempInputFile = `${fullOutFileName}~`
-    this._fs.writeFileSync(tempInputFile, text, { flag: 'w' })
+    fs.writeFileSync(tempInputFile, text, { flag: 'w' })
     const command =
       `pandoc -f html ${this.pandocOptions} -o "${fullOutFileName}"` +
       ` "${tempInputFile}"`
-    const out = this._exec(command, { cwd: fullOutDirName })
+    const out = exec(command, { cwd: fullOutDirName })
     if (out.status > 0) {
       console.error(out.stderr)
     }
-    return this._fs.unlinkSync(tempInputFile)
+    return fs.unlinkSync(tempInputFile)
   }
 
   /**
@@ -136,9 +129,9 @@ class App {
    * @param {string} dirOut Absolute path to a directory where to place converted MD files
    */
   writeGlobalIndexFile(indexHtmlFiles, dirOut) {
-    const globalIndex = this._path.join(dirOut, 'index.md')
-    const $content = this.formatter.createListFromArray(indexHtmlFiles)
-    const text = this.formatter.getHtml($content)
+    const globalIndex = path.join(dirOut, 'index.md')
+    const $content = formatter.createListFromArray(indexHtmlFiles)
+    const text = formatter.getHtml($content)
     return this.writeMarkdownFile(text, globalIndex)
   }
 }
