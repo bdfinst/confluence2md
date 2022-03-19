@@ -1,15 +1,16 @@
+/* eslint-disable import/no-named-as-default-member */
 /* eslint-disable import/imports-first */
 /* eslint-disable node/no-unsupported-features/node-builtins */
 /* eslint-disable import/order */
 /* eslint-disable no-console */
 
-import Formatter from './Formatter'
-import PageFactory from './PageFactory'
-import Utils from './Utils'
 import { exec } from 'child_process'
+import formatter from './Formatter'
 import { promises as fsPromises } from 'fs'
 import { join } from 'path'
+import pageFactory from './pageFactory'
 import { promisify } from 'util'
+import utilities from './utilities'
 
 const execAsync = promisify(exec)
 
@@ -40,9 +41,7 @@ const writeMarkdownFile = async (text, fullOutFileName) => {
     extraOptions.join(' '),
   ].join(' ')
 
-  const utils = new Utils()
-
-  const fullOutDirName = utils.getDirname(fullOutFileName)
+  const fullOutDirName = utilities.getDirname(fullOutFileName)
 
   try {
     await fsPromises.mkdir(fullOutDirName, { recursive: true })
@@ -68,8 +67,6 @@ const writeMarkdownFile = async (text, fullOutFileName) => {
  * @param {string} dirOut Absolute path to a directory where to place converted MD files
  */
 const writeGlobalIndexFile = async (indexHtmlFiles, dirOut) => {
-  const formatter = new Formatter()
-
   const globalIndex = join(dirOut, 'index.md')
   const $content = formatter.createListFromArray(indexHtmlFiles)
   const text = formatter.getHtml($content)
@@ -85,13 +82,12 @@ const convertPage = async (page, dirIn, dirOut, pages) => {
   console.log(`Parsing ... ${page.path}`)
   const text = page.getTextToConvert(pages)
   const fullOutFileName = join(dirOut, page.space, page.fileNameNew)
-  const utils = new Utils()
 
   console.log(`Making Markdown ... ${fullOutFileName}`)
   await writeMarkdownFile(text, fullOutFileName)
-  utils.copyAssets(
-    utils.getDirname(page.path),
-    utils.getDirname(fullOutFileName),
+  utilities.copyAssets(
+    utilities.getDirname(page.path),
+    utilities.getDirname(fullOutFileName),
   )
   return console.log('Done\n')
 }
@@ -102,16 +98,13 @@ const convertPage = async (page, dirIn, dirOut, pages) => {
  * @param {string} dirOut Directory where to place converted MD files
  */
 const convert = async (dirIn, dirOut) => {
-  const utils = new Utils()
-
-  const filePaths = utils.readDirRecursive(dirIn)
-  const pageFactory = new PageFactory()
+  const filePaths = utilities.readDirRecursive(dirIn)
 
   const pages = (() => {
     const result = []
     filePaths.forEach(filePath => {
       if (filePath.endsWith('.html')) {
-        result.push(pageFactory.create(filePath))
+        result.push(pageFactory.buildNewPage(filePath))
       }
     })
     return result
@@ -125,7 +118,7 @@ const convert = async (dirIn, dirOut) => {
     return convertPage(page, dirIn, dirOut, pages)
   })
 
-  if (!utils.isFile(dirIn)) {
+  if (!utilities.isFile(dirIn)) {
     await writeGlobalIndexFile(indexHtmlFiles, dirOut)
   }
   return console.log('Conversion done')
