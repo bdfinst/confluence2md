@@ -3,20 +3,10 @@
 /* eslint-disable consistent-return */
 /* eslint-disable class-methods-use-this */
 
-'use strict'
+import fs from 'fs'
+import ncp from 'ncp'
+import path from 'path'
 
-const fs = require('fs')
-const path = require('path')
-const ncp = require('ncp')
-
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 class Utils {
   mkdirSync(filePath) {
     this.filePath = filePath
@@ -174,4 +164,4 @@ class Utils {
   }
 }
 
-module.exports = Utils
+export default Utils

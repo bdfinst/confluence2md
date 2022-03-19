@@ -4,19 +4,11 @@
 /* eslint-disable no-console */
 /* eslint-disable class-methods-use-this */
 
-'use strict'
-
-const cheerio = require('cheerio')
-const Utils = require('./Utils')
+import Utils from './Utils'
+import cheerio from 'cheerio'
 
 let utils
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
+
 class Formatter {
   constructor() {
     utils = new Utils()
@@ -287,4 +279,4 @@ class Formatter {
   }
 }
 
-module.exports = Formatter
+export default Formatter

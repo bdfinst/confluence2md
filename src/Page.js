@@ -1,16 +1,9 @@
-'use strict'
-
-const Formatter = require('./Formatter')
-const Utils = require('./Utils')
+import Formatter from './Formatter'
+import Utils from './Utils'
 
 let formatter
 let utils
 
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 class Page {
   constructor(fullPath) {
     formatter = new Formatter()
@@ -79,4 +72,4 @@ class Page {
   }
 }
 
-module.exports = Page
+export default Page

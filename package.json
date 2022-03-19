@@ -3,6 +3,7 @@
   "version": "1.2.0",
   "author": "Martin Lukes",
   "license": "MIT",
+  "type":"module",
   "description": "Convert Confluence Pages to Markdown",
   "keywords": [
     "Confluence",
@@ -12,18 +13,16 @@
   "bin": "./bin/confluence-to-markdown",
   "main": "./src/index.js",
   "repository": "git@github.com:meridius/confluence-to-markdown.git",
+  "engines" : { 
+    "npm" : ">=7.0.0",
+    "node" : ">=16.0.0"
+  },
   "dependencies": {
     "cheerio": "^0.22.0",
-    "mkdirp": "^0.5.1",
     "ncp": "^2.0.0",
-    "pandoc": "^0.2.0",
-    "path": "^0.12.7",
-    "rimraf": "^3.0.2",
-    "sync-exec": "^0.6.2"
+    "path": "^0.12.7"
   },
   "devDependencies": {
-    "chai": "^4.3.6",
-    "chai-fs": "^2.0.0",
     "concurrently": "^7.0.0",
     "eslint": "7.32.0",
     "eslint-config-airbnb": "18.2.1",
@@ -37,7 +36,7 @@
     "jest": "^27.5.1"
   },
   "scripts": {
-    "start": "node ./src/index.js",
+    "start": "node --es-module-specifier-resolution=node ./src/index.js",
     "test": "jest --runInBand --coverage --config ./jest.config.json",
     "test:ci": "jest  --config ./jest.config.json --watch",
     "format:fix": "prettier --write '**/*.{js,yaml,json,md}'",

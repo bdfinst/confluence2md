@@ -1,9 +1,13 @@
-'use strict'
-
-const Bootstrap = require('./Bootstrap')
+import convert from './convert'
+import path from 'path'
 
 const pathResource = process.argv[2] // can also be a file
-const pathResult = process.argv[3]
+const pathResult = process.argv[3] || ''
 
-const bootstrap = new Bootstrap()
-bootstrap.run(pathResource, pathResult)
+const fromPath = path.resolve(pathResource)
+const toPath = path.resolve(pathResult)
+
+console.log(`Using source: ${fromPath}`)
+console.log(`Using destination: ${toPath}`)
+
+convert(fromPath, toPath)

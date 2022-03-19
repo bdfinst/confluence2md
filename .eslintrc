@@ -16,6 +16,10 @@
     "node": true,
     "jest": true
   },
+  "parserOptions": {
+    "ecmaVersion": 10,
+    "sourceType": "module"
+  },
   "overrides": [{
     "files": [
       "**/*.js"
