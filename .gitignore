@@ -5,3 +5,4 @@ data/
 .history
 .DS_Store
 .eslintcache
+coverage/

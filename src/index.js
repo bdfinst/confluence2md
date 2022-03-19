@@ -1,5 +1,6 @@
-import convert from './convert'
 import path from 'path'
+
+import convert from './convert'
 
 const pathResource = process.argv[2] // can also be a file
 const pathResult = process.argv[3] || ''
