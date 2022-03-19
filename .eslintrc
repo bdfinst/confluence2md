@@ -8,22 +8,26 @@
   "plugins": [
     "prettier",
     "no-floating-promise",
-    "promise"
+    "promise",
+    "jest"
   ],
   "env": {
     "es6": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
   "overrides": [{
     "files": [
       "**/*.js"
     ]
   }],
-  "ignorePatterns": [
-    "/test/**/*.js"
-  ],
   "rules": {
     "strict": ["error", "global"],
+    "jest/no-disabled-tests": "warn",
+    "jest/no-focused-tests": "error",
+    "jest/no-identical-title": "error",
+    "jest/prefer-to-have-length": "warn",
+    "jest/valid-expect": "error",
     "promise/prefer-await-to-then": "warn",
     "promise/prefer-await-to-callbacks": "warn",
     "no-floating-promise/no-floating-promise": 2,

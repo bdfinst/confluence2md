@@ -1,0 +1,24 @@
+{
+  "testRegex": "((\\.|/*.)(test))\\.js?$",
+  "testEnvironment": "node",
+  "testPathIgnorePatterns": ["/node_modules/", "./dist"],
+  "coverageReporters": ["lcov", "html", "text"],
+  "coverageThreshold": {
+    "global": {
+      "statements": 90,
+      "branches": 81,
+      "functions": 90,
+      "lines": 90
+    }
+  },
+  "coveragePathIgnorePatterns": [
+    "/node_modules/",
+    "./src/database/index.js",
+    "server.js",
+    "app.js"
+  ],
+  "moduleNameMapper": {
+    "^mongoose$": "<rootDir>/node_modules/mongoose"
+  },
+  "testTimeout": 30000
+}

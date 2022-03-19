@@ -1,37 +1,48 @@
+'use strict'
+
+const Formatter = require('./Formatter')
+const Utils = require('./Utils')
+
+let formatter
+let utils
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 class Page {
-  constructor(fullPath, formatter, utils) {
-    this.formatter = formatter
-    this.utils = utils
+  constructor(fullPath) {
+    formatter = new Formatter()
+    utils = new Utils()
     this.path = fullPath
     this.init()
   }
 
   init() {
-    this.fileName = this.utils.getBasename(this.path)
-    this.fileBaseName = this.utils.getBasename(this.path, '.html')
-    this.filePlainText = this.utils.readFile(this.path)
-    this.$ = this.formatter.load(this.filePlainText)
+    this.fileName = utils.getBasename(this.path)
+    this.fileBaseName = utils.getBasename(this.path, '.html')
+    this.filePlainText = utils.readFile(this.path)
+    this.$ = formatter.load(this.filePlainText)
     this.content = this.$.root()
     this.heading = this.getHeading()
     this.fileNameNew = this.getFileNameNew()
-    this.space = this.utils.getBasename(this.utils.getDirname(this.path))
-    return (this.spacePath = this.getSpacePath())
+    this.space = utils.getBasename(utils.getDirname(this.path))
+
+    this.spacePath = this.getSpacePath()
+
+    return this.spacePath
   }
 
   getSpacePath() {
-    return `../${this.utils.sanitizeFilename(this.space)}/${this.fileNameNew}`
+    return `../${utils.sanitizeFilename(this.space)}/${this.fileNameNew}`
   }
 
   getFileNameNew() {
     if (this.fileName === 'index.html') {
       return 'index.md'
     }
-    return `${this.utils.sanitizeFilename(this.heading)}.md`
+    return `${utils.sanitizeFilename(this.heading)}.md`
   }
 
   getHeading() {
@@ -48,23 +59,23 @@ class Page {
    * @return {string} Content of a file parsed to MD
    */
   getTextToConvert(pages) {
-    let content = this.formatter.getRightContentByFileName(
+    let content = formatter.getRightContentByFileName(
       this.content,
       this.fileName,
     )
-    content = this.formatter.fixHeadline(content)
-    content = this.formatter.fixIcon(content)
-    content = this.formatter.fixEmptyLink(content)
-    content = this.formatter.fixEmptyHeading(content)
-    content = this.formatter.fixPreformattedText(content)
-    content = this.formatter.fixImageWithinSpan(content)
-    content = this.formatter.removeArbitraryElements(content)
-    content = this.formatter.fixArbitraryClasses(content)
-    content = this.formatter.fixAttachmentWraper(content)
-    content = this.formatter.fixPageLog(content)
-    content = this.formatter.fixLocalLinks(content, this.space, pages)
-    content = this.formatter.addPageHeading(content, this.heading)
-    return this.formatter.getHtml(content)
+    content = formatter.fixHeadline(content)
+    content = formatter.fixIcon(content)
+    content = formatter.fixEmptyLink(content)
+    content = formatter.fixEmptyHeading(content)
+    content = formatter.fixPreformattedText(content)
+    content = formatter.fixImageWithinSpan(content)
+    content = formatter.removeArbitraryElements(content)
+    content = formatter.fixArbitraryClasses(content)
+    content = formatter.fixAttachmentWrapper(content)
+    content = formatter.fixPageLog(content)
+    content = formatter.fixLocalLinks(content, this.space, pages)
+    content = formatter.addPageHeading(content, this.heading)
+    return formatter.getHtml(content)
   }
 }
 
