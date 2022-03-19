@@ -1,12 +1,9 @@
-/* eslint-disable import/no-named-as-default-member */
 /* eslint-disable no-useless-escape */
-/* eslint-disable no-return-assign */
 /* eslint-disable consistent-return */
-/* eslint-disable no-console */
-/* eslint-disable class-methods-use-this */
-
+/* eslint-disable no-return-assign */
 import cheerio from 'cheerio'
-import utilities from './utilities'
+
+import { getLinkToNewPageFile } from './utilities'
 
 /**
  * Removes element by selector and leaves only its text content
@@ -233,7 +230,7 @@ export function fixLocalLinks(content, space, pages) {
         return $(el).replaceWith($(el).text())
       }
 
-      const pageLink = utilities.getLinkToNewPageFile(href, pages, space)
+      const pageLink = getLinkToNewPageFile(href, pages, space)
       if (pageLink) {
         return $(el).attr('href', pageLink)
       }

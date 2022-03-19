@@ -1,16 +1,11 @@
-/* eslint-disable import/no-named-as-default-member */
-/* eslint-disable import/imports-first */
-/* eslint-disable node/no-unsupported-features/node-builtins */
-/* eslint-disable import/order */
-/* eslint-disable no-console */
-
 import { exec } from 'child_process'
-import formatter from './Formatter'
 import { promises as fsPromises } from 'fs'
 import { join } from 'path'
-import pageFactory from './pageFactory'
 import { promisify } from 'util'
-import utilities from './utilities'
+
+import { createListFromArray, getHtml } from './Formatter'
+import pageFactory from './pageFactory'
+import { copyAssets, getDirname, isFile, readDirRecursive } from './utilities'
 
 const execAsync = promisify(exec)
 
@@ -41,7 +36,7 @@ const writeMarkdownFile = async (text, fullOutFileName) => {
     extraOptions.join(' '),
   ].join(' ')
 
-  const fullOutDirName = utilities.getDirname(fullOutFileName)
+  const fullOutDirName = getDirname(fullOutFileName)
 
   try {
     await fsPromises.mkdir(fullOutDirName, { recursive: true })
@@ -68,8 +63,8 @@ const writeMarkdownFile = async (text, fullOutFileName) => {
  */
 const writeGlobalIndexFile = async (indexHtmlFiles, dirOut) => {
   const globalIndex = join(dirOut, 'index.md')
-  const $content = formatter.createListFromArray(indexHtmlFiles)
-  const text = formatter.getHtml($content)
+  const $content = createListFromArray(indexHtmlFiles)
+  const text = getHtml($content)
   return writeMarkdownFile(text, globalIndex)
 }
 
@@ -85,10 +80,7 @@ const convertPage = async (page, dirIn, dirOut, pages) => {
 
   console.log(`Making Markdown ... ${fullOutFileName}`)
   await writeMarkdownFile(text, fullOutFileName)
-  utilities.copyAssets(
-    utilities.getDirname(page.path),
-    utilities.getDirname(fullOutFileName),
-  )
+  copyAssets(getDirname(page.path), getDirname(fullOutFileName))
   return console.log('Done\n')
 }
 
@@ -98,7 +90,7 @@ const convertPage = async (page, dirIn, dirOut, pages) => {
  * @param {string} dirOut Directory where to place converted MD files
  */
 const convert = async (dirIn, dirOut) => {
-  const filePaths = utilities.readDirRecursive(dirIn)
+  const filePaths = readDirRecursive(dirIn)
 
   const pages = (() => {
     const result = []
@@ -118,7 +110,7 @@ const convert = async (dirIn, dirOut) => {
     return convertPage(page, dirIn, dirOut, pages)
   })
 
-  if (!utilities.isFile(dirIn)) {
+  if (!isFile(dirIn)) {
     await writeGlobalIndexFile(indexHtmlFiles, dirOut)
   }
   return console.log('Conversion done')

@@ -1,17 +1,36 @@
-/* eslint-disable import/prefer-default-export */
-/* eslint-disable import/no-named-as-default-member */
-import formatter from './Formatter'
-import utilities from './utilities'
+import {
+  addPageHeading,
+  fixArbitraryClasses,
+  fixAttachmentWrapper,
+  fixEmptyHeading,
+  fixEmptyLink,
+  fixHeadline,
+  fixIcon,
+  fixImageWithinSpan,
+  fixLocalLinks,
+  fixPageLog,
+  fixPreformattedText,
+  getHtml,
+  getRightContentByFileName,
+  load,
+  removeArbitraryElements,
+} from './Formatter'
+import {
+  getBasename,
+  getDirname,
+  readFile,
+  sanitizeFilename,
+} from './utilities'
 
 function getSpacePath(space, fileNameNew) {
-  return `../${utilities.sanitizeFilename(space)}/${fileNameNew}`
+  return `../${sanitizeFilename(space)}/${fileNameNew}`
 }
 
 function getFileNameNew(fileName, heading) {
   if (fileName === 'index.html') {
     return 'index.md'
   }
-  return `${utilities.sanitizeFilename(heading)}.md`
+  return `${sanitizeFilename(heading)}.md`
 }
 
 function getHeading(fileName, content) {
@@ -23,33 +42,34 @@ function getHeading(fileName, content) {
   return title.replace(`${indexName} : `, '')
 }
 
-export function buildNewPage(fullPath) {
-  const fileName = utilities.getBasename(fullPath)
-  const fileBaseName = utilities.getBasename(fullPath, '.html')
-  const filePlainText = utilities.readFile(fullPath)
-  const $ = formatter.load(filePlainText)
+export default function buildNewPage(fullPath) {
+  const fileName = getBasename(fullPath)
+  const fileBaseName = getBasename(fullPath, '.html')
+  const filePlainText = readFile(fullPath)
+  const $ = load(filePlainText)
   const content = $.root()
   const heading = getHeading(fileName, content)
   const fileNameNew = getFileNameNew(fileName, heading)
-  const space = utilities.getBasename(utilities.getDirname(fullPath))
+  const space = getBasename(getDirname(fullPath))
 
   const spacePath = getSpacePath(space, fileNameNew)
 
   function getTextToConvert(pages, contentIn) {
-    let pageContent = formatter.getRightContentByFileName(contentIn, fileName)
-    pageContent = formatter.fixHeadline(pageContent)
-    pageContent = formatter.fixIcon(pageContent)
-    pageContent = formatter.fixEmptyLink(pageContent)
-    pageContent = formatter.fixEmptyHeading(pageContent)
-    pageContent = formatter.fixPreformattedText(pageContent)
-    pageContent = formatter.fixImageWithinSpan(pageContent)
-    pageContent = formatter.removeArbitraryElements(pageContent)
-    pageContent = formatter.fixArbitraryClasses(pageContent)
-    pageContent = formatter.fixAttachmentWrapper(pageContent)
-    pageContent = formatter.fixPageLog(pageContent)
-    pageContent = formatter.fixLocalLinks(pageContent, space, pages)
-    pageContent = formatter.addPageHeading(pageContent, heading)
-    return formatter.getHtml(pageContent)
+    let pageContent = getRightContentByFileName(contentIn, fileName)
+    pageContent = fixHeadline(pageContent)
+    pageContent = fixIcon(pageContent)
+    pageContent = fixEmptyLink(pageContent)
+    pageContent = fixEmptyHeading(pageContent)
+    pageContent = fixPreformattedText(pageContent)
+    pageContent = fixImageWithinSpan(pageContent)
+    pageContent = removeArbitraryElements(pageContent)
+    pageContent = fixArbitraryClasses(pageContent)
+    pageContent = fixAttachmentWrapper(pageContent)
+    pageContent = fixPageLog(pageContent)
+    pageContent = fixLocalLinks(pageContent, space, pages)
+    pageContent = addPageHeading(pageContent, heading)
+
+    return getHtml(pageContent)
   }
 
   return { spacePath, fileBaseName, getTextToConvert }

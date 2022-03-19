@@ -1,11 +1,9 @@
-/* eslint-disable no-console */
 /* eslint-disable no-useless-escape */
 /* eslint-disable consistent-return */
-/* eslint-disable class-methods-use-this */
-
 import fs from 'fs'
-import ncp from 'ncp'
 import path from 'path'
+
+import ncp from 'ncp'
 
 /**
  * Checks if given file exists and is a file.
