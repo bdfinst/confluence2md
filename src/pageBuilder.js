@@ -41,19 +41,20 @@ const getHeading = (fileName, content) => {
   return title.replace(`${indexName} : `, '')
 }
 
-const buildNewPage = fullPath => {
+const pageBuilder = fullPath => {
+  const path = fullPath
   const fileName = getBasename(fullPath)
   const fileBaseName = getBasename(fullPath, '.html')
   const filePlainText = readFile(fullPath)
   const $ = load(filePlainText)
-  const content = $.root()
-  const heading = getHeading(fileName, content)
+  const contentIn = $.root()
+  const heading = getHeading(fileName, contentIn)
   const fileNameNew = getFileNameNew(fileName, heading)
   const space = getBasename(getDirname(fullPath))
 
   const spacePath = getSpacePath(space, fileNameNew)
 
-  const getTextToConvert = (pages, contentIn) => {
+  const getTextToConvert = (pages) => {
     let pageContent = getRightContentByFileName(contentIn, fileName)
     pageContent = fixHeadline(pageContent)
     pageContent = fixIcon(pageContent)
@@ -71,7 +72,7 @@ const buildNewPage = fullPath => {
     return getHtml(pageContent)
   }
 
-  return { spacePath, fileBaseName, getTextToConvert }
+  return { spacePath, fileBaseName, getTextToConvert, fileNameNew, space, path }
 }
 
-export default buildNewPage
+export default pageBuilder

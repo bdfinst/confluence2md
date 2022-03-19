@@ -4,7 +4,7 @@ import { join } from 'path'
 import { promisify } from 'util'
 
 import { createListFromArray, getHtml } from './mdFormatter'
-import pageFactory from './pageFactory'
+import pageBuilder from './pageBuilder'
 import { copyAssets, getDirname, isFile, readDirRecursive } from './utilities'
 
 const execAsync = promisify(exec)
@@ -73,9 +73,11 @@ const writeGlobalIndexFile = async (indexHtmlFiles, dirOut) => {
  * @param {Page} page Page entity of HTML file
  * @param {string} dirOut Directory where to place converted MD files
  */
-const convertPage = async (page, dirIn, dirOut, pages) => {
+const convertPage = async (page, dirOut, pages) => {
+  console.log(page)
   console.log(`Parsing ... ${page.path}`)
   const text = page.getTextToConvert(pages)
+  console.log(page)
   const fullOutFileName = join(dirOut, page.space, page.fileNameNew)
 
   console.log(`Making Markdown ... ${fullOutFileName}`)
@@ -92,22 +94,22 @@ const convertPage = async (page, dirIn, dirOut, pages) => {
 const convert = async (dirIn, dirOut) => {
   const filePaths = readDirRecursive(dirIn)
 
-  const pages = (() => {
-    const result = []
-    filePaths.forEach(filePath => {
-      if (filePath.endsWith('.html')) {
-        result.push(pageFactory(filePath))
-      }
+  const pages = filePaths
+    .filter(filePath => {
+      return filePath.endsWith('.html')
     })
-    return result
-  })()
+    .map(filePath => {
+      return pageBuilder(filePath)
+    })
+
 
   const indexHtmlFiles = []
   pages.forEach(page => {
     if (page.fileName === 'index.html') {
-      indexHtmlFiles.push(join(page.space, 'index')) //  requires link to pages without .md extension
+      indexHtmlFiles.push(join(page.space, 'index'))
     }
-    return convertPage(page, dirIn, dirOut, pages)
+
+    return convertPage(page, dirOut, pages)
   })
 
   if (!isFile(dirIn)) {

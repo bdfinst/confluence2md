@@ -1,6 +1,4 @@
-'use strict'
-
-const { getPages, convert } from '../src/fileHandler')
+import { convert, getPages } from '../src/fileHandler'
 
 it('should return an error if the `from` path is not a directory', () => {
   const path = './NO_PATH'
