@@ -3,7 +3,7 @@ import { promises as fsPromises } from 'fs'
 import { join } from 'path'
 import { promisify } from 'util'
 
-import { createListFromArray, getHtml } from './Formatter'
+import { createListFromArray, getHtml } from './mdFormatter'
 import pageFactory from './pageFactory'
 import { copyAssets, getDirname, isFile, readDirRecursive } from './utilities'
 

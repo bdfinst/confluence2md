@@ -14,7 +14,7 @@ import {
   getRightContentByFileName,
   load,
   removeArbitraryElements,
-} from './Formatter'
+} from './mdFormatter'
 import {
   getBasename,
   getDirname,
