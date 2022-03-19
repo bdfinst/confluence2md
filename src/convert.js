@@ -96,7 +96,7 @@ const convert = async (dirIn, dirOut) => {
     const result = []
     filePaths.forEach(filePath => {
       if (filePath.endsWith('.html')) {
-        result.push(pageFactory.buildNewPage(filePath))
+        result.push(pageFactory(filePath))
       }
     })
     return result
