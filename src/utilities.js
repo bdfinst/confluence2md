@@ -11,7 +11,7 @@ import ncp from 'ncp'
  * @param {string|void} cwd Current working directory against which the path is built.
  * @return {bool}
  */
-export function isFile(filePath, cwd = '') {
+export const isFile = (filePath, cwd = '') => {
   const pathFull = path.resolve(cwd, filePath)
   const stat = fs.existsSync(pathFull) ? fs.statSync(pathFull) : undefined
   return stat && stat.isFile()
@@ -23,7 +23,7 @@ export function isFile(filePath, cwd = '') {
  * @param {string|void} cwd Current working directory against which the path is built.
  * @return {bool}
  */
-export function isDir(dirPath, cwd = '') {
+export const isDir = (dirPath, cwd = '') => {
   const pathFull = path.resolve(cwd, dirPath)
   const stat = fs.existsSync(pathFull) ? fs.statSync(pathFull) : undefined
   return stat && stat.isDirectory()
@@ -35,7 +35,7 @@ export function isDir(dirPath, cwd = '') {
  * @param {bool|void} filesOnly Whether to return only files.
  * @return {array}
  */
-export function readDirRecursive(fromPath, filesOnly = true) {
+export const readDirRecursive = (fromPath, filesOnly = true) => {
   const fullPaths = []
   if (isFile(fromPath)) {
     return [fromPath]
@@ -60,7 +60,7 @@ export function readDirRecursive(fromPath, filesOnly = true) {
  * @param (string) filename Filename and extension, but not directory component
  * @return (string)
  */
-export function sanitizeFilename(name) {
+export const sanitizeFilename = name =>
   // Restrictions based on Windows. *nix systems only reserve a subset of this list.
   //    (space)
   // <> (less than, greater than)
@@ -76,24 +76,18 @@ export function sanitizeFilename(name) {
   // *  (asterisk)
   //    (other punctuation, while not strictly invalid, can lead to errors if copy-pasting filenames into shells or scripts)
   // Finally, collapse multiple contiguous underscores into a single underscore
-  return name
+  name
     .replace(/[\s<>()\[\]{}:;'`"\/\\|?\*~!@#$%^&,]/g, '_')
     .replace(/__+/g, '_')
-}
 
-export function getBasename(fromPath, extension) {
-  return path.basename(fromPath, extension)
-}
+export const getBasename = (fromPath, extension) =>
+  path.basename(fromPath, extension)
 
-export function getDirname(fromPath) {
-  return path.dirname(fromPath)
-}
+export const getDirname = fromPath => path.dirname(fromPath)
 
-export function readFile(fromPath) {
-  return fs.readFileSync(fromPath, 'utf8')
-}
+export const readFile = fromPath => fs.readFileSync(fromPath, 'utf8')
 
-export function getLinkToNewPageFile(href, pages, space) {
+export const getLinkToNewPageFile = (href, pages, space) => {
   const fileName = getBasename(href)
   const pageRegex = /.*pageId=(\d+).*/
   const matches = href.match(pageRegex)
@@ -131,7 +125,7 @@ export function getLinkToNewPageFile(href, pages, space) {
  * @param {string} fullInPath Absolute path to file to convert
  * @param {string} dirOut Directory where to place converted MD files
  */
-export function copyAssets(pathWithHtmlFiles, dirOut) {
+export const copyAssets = (pathWithHtmlFiles, dirOut) => {
   const result = []
   const assets = ['images', 'attachments']
   assets.forEach(asset => {

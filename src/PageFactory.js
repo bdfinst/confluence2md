@@ -22,18 +22,17 @@ import {
   sanitizeFilename,
 } from './utilities'
 
-function getSpacePath(space, fileNameNew) {
-  return `../${sanitizeFilename(space)}/${fileNameNew}`
-}
+const getSpacePath = (space, fileNameNew) =>
+  `../${sanitizeFilename(space)}/${fileNameNew}`
 
-function getFileNameNew(fileName, heading) {
+const getFileNameNew = (fileName, heading) => {
   if (fileName === 'index.html') {
     return 'index.md'
   }
   return `${sanitizeFilename(heading)}.md`
 }
 
-function getHeading(fileName, content) {
+const getHeading = (fileName, content) => {
   const title = content.find('title').text()
   if (fileName === 'index.html') {
     return title
@@ -42,7 +41,7 @@ function getHeading(fileName, content) {
   return title.replace(`${indexName} : `, '')
 }
 
-export default function buildNewPage(fullPath) {
+const buildNewPage = fullPath => {
   const fileName = getBasename(fullPath)
   const fileBaseName = getBasename(fullPath, '.html')
   const filePlainText = readFile(fullPath)
@@ -54,7 +53,7 @@ export default function buildNewPage(fullPath) {
 
   const spacePath = getSpacePath(space, fileNameNew)
 
-  function getTextToConvert(pages, contentIn) {
+  const getTextToConvert = (pages, contentIn) => {
     let pageContent = getRightContentByFileName(contentIn, fileName)
     pageContent = fixHeadline(pageContent)
     pageContent = fixIcon(pageContent)
@@ -74,3 +73,5 @@ export default function buildNewPage(fullPath) {
 
   return { spacePath, fileBaseName, getTextToConvert }
 }
+
+export default buildNewPage

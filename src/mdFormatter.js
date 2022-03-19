@@ -11,7 +11,7 @@ import { getLinkToNewPageFile } from './utilities'
  * @param {string} selector Selector of an element
  * @return {cheerio obj} Cheerio object
  */
-export function removeElementLeaveText(content, selector) {
+export const removeElementLeaveText = (content, selector) => {
   const $ = cheerio
   return content
     .find(selector)
@@ -23,15 +23,13 @@ export function removeElementLeaveText(content, selector) {
  * @param {string} text Content of a file
  * @return {cheerio obj} Root object of a text
  */
-export function load(text) {
-  return cheerio.load(text)
-}
+export const load = text => cheerio.load(text)
 
 /**
  * @param {cheerio obj} content Content of a file
  * @return {string} HTML representation of a content
  */
-export function getHtml(content) {
+export const getHtml = content => {
   let contentHtml = ''
 
   content.each((i, el) => (contentHtml += cheerio(el).html()))
@@ -44,7 +42,7 @@ export function getHtml(content) {
  * @see load() You need to load the content first.
  * @param {string} fileName Name of a file
  */
-export function getRightContentByFileName(content, fileName) {
+export const getRightContentByFileName = (content, fileName) => {
   if (fileName === 'index.html') {
     return content
       .find('#content')
@@ -65,11 +63,10 @@ export function getRightContentByFileName(content, fileName) {
  * @param {cheerio obj} content Content of a file
  * @return {cheerio obj} Cheerio object
  */
-export function fixHeadline(content) {
-  return removeElementLeaveText(content, 'span.aui-icon')
-}
+export const fixHeadline = content =>
+  removeElementLeaveText(content, 'span.aui-icon')
 
-export function addPageHeading(content, headingText) {
+export const addPageHeading = (content, headingText) => {
   const $ = cheerio
   const h1 = $('<h1>').text(headingText)
   content.first().prepend(h1)
@@ -81,16 +78,15 @@ export function addPageHeading(content, headingText) {
  * @param {cheerio obj} content Content of a file
  * @return {cheerio obj} Cheerio object
  */
-export function fixIcon(content) {
-  return removeElementLeaveText(content, 'span.aui-icon')
-}
+export const fixIcon = content =>
+  removeElementLeaveText(content, 'span.aui-icon')
 
 /**
  * Removes empty link
  * @param {cheerio obj} content Content of a file
  * @return {cheerio obj} Cheerio object
  */
-export function fixEmptyLink(content) {
+export const fixEmptyLink = content => {
   const $ = cheerio
   return content
     .find('a')
@@ -107,7 +103,7 @@ export function fixEmptyLink(content) {
  * @param {cheerio obj} content Content of a file
  * @return {cheerio obj} Cheerio object
  */
-export function fixEmptyHeading(content) {
+export const fixEmptyHeading = content => {
   const $ = cheerio
   return content
     .find(':header')
@@ -124,7 +120,7 @@ export function fixEmptyHeading(content) {
  * @param {cheerio obj} content Content of a file
  * @return {cheerio obj} Cheerio object
  */
-export function fixPreformattedText(content) {
+export const fixPreformattedText = content => {
   const $ = cheerio
   return content
     .find('pre')
@@ -146,7 +142,7 @@ export function fixPreformattedText(content) {
  * @param {cheerio obj} content Content of a file
  * @return {cheerio obj} Cheerio object
  */
-export function fixImageWithinSpan(content) {
+export const fixImageWithinSpan = content => {
   const $ = cheerio
   return content
     .find('span:has(img)')
@@ -158,16 +154,15 @@ export function fixImageWithinSpan(content) {
     .end()
 }
 
-export function removeArbitraryElements(content) {
-  return removeElementLeaveText(content, 'span, .user-mention')
-}
+export const removeArbitraryElements = content =>
+  removeElementLeaveText(content, 'span, .user-mention')
 
 /**
  * Removes arbitrary confluence classes.
  * @param {cheerio obj} content Content of a file
  * @return {cheerio obj} Cheerio object
  */
-export function fixArbitraryClasses(content) {
+export const fixArbitraryClasses = content => {
   const regex =
     /(^|\s)(confluence\-\S+|external-link|uri|tablesorter-header-inner|odd|even|header)/g
   return content
@@ -181,8 +176,8 @@ export function fixArbitraryClasses(content) {
  * @param {cheerio obj} content Content of a file
  * @return {cheerio obj} Cheerio object
  */
-export function fixAttachmentWrapper(content) {
-  return content
+export const fixAttachmentWrapper = content =>
+  content
     .find('.attachment-buttons')
     .remove()
     .end() // action buttons for attachments
@@ -192,21 +187,19 @@ export function fixAttachmentWrapper(content) {
     .find('table.attachments.aui')
     .remove()
     .end() // overview table with useless links
-}
 
 /**
  * Removes arbitrary confluence elements for page log.
  * @param {cheerio obj} content Content of a file
  * @return {cheerio obj} Cheerio object
  */
-export function fixPageLog(content) {
-  return content
+export const fixPageLog = content =>
+  content
     .find('[id$="Recentspaceactivity"], [id$=Spacecontributors]')
     .parent()
     .remove()
     .end()
     .end()
-}
 
 /**
  * Changes links to local HTML files to generated MD files.
@@ -214,7 +207,7 @@ export function fixPageLog(content) {
  * @param {string} cwd Current working directory (where HTML file reside)
  * @return {cheerio obj} Cheerio object
  */
-export function fixLocalLinks(content, space, pages) {
+export const fixLocalLinks = (content, space, pages) => {
   const $ = cheerio
   return content
     .find('a')
@@ -242,7 +235,7 @@ export function fixLocalLinks(content, space, pages) {
  * @param {array} indexHtmlFiles Relative paths of index.html files from all parsed Confluence spaces
  * @return {cheerio obj} Cheerio object
  */
-export function createListFromArray(itemArray) {
+export const createListFromArray = itemArray => {
   const cheerioList = cheerio.load('<ul>')
   const ulTag = cheerioList('ul')
 
