@@ -1,27 +1,29 @@
-# Confluence to Markdown converter which is actually working
+# Confluence to Markdown converter
 
-Convert [Confluence HTML export](#conflhowto) to Markdown
+Forked from [confluence-to-markdown](https://github.com/meridius/confluence-to-markdown) and updated to ES from CoffeeScript
 
-## Requirements
+Convert [Confluence HTML export](#conflhowto) to Markdown with optional frontmatter for static site generation
 
-You must have [pandoc] command line tool installed. Check it by running:
+## Dependencies
 
-```
+The [pandoc] command line tool must be installed. Check it by running:
+
+```bash
 pandoc --version
 ```
 
+## Installing and running
+
 Install all project dependencies:
 
-```
-npm install
+```bash
+npm ci
 ```
 
-## Usage
+To convert an exported Confluence space:
 
-In the converter's directory:
-
-```
-npm run start <pathResource> <pathResult>
+```bash
+npm start <pathResource> <pathResult>
 ```
 
 ### Parameters
@@ -74,10 +76,6 @@ Note that if the converter does not know how to handle a style, HTML to Markdown
 
 **WARNING**  
 Please note that Blog will **NOT** be exported to HTML. You have to copy it manually or export it to XML or PDF. But those format cannot be processed by this utility.
-
-# Attribution
-
-Thanks to Eric White for a starting point.
 
 [pandoc]: http://pandoc.org/installing.html
 [pandoc-options]: http://hackage.haskell.org/package/pandoc

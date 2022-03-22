@@ -1,7 +1,7 @@
 {
-  "name": "confluence-to-markdown",
-  "version": "1.2.0",
-  "author": "Martin Lukes",
+  "name": "confluence-to-md",
+  "version": "1.0.0",
+  "author": "Bryan Finster",
   "license": "MIT",
   "type": "module",
   "description": "Convert Confluence Pages to Markdown",
@@ -10,9 +10,8 @@
     "Markdown",
     "Confluence to Markdown"
   ],
-  "bin": "./bin/confluence-to-markdown",
   "main": "./src/index.js",
-  "repository": "git@github.com:meridius/confluence-to-markdown.git",
+  "repository": "git@github.com:bdfinst/confluence-to-md.git",
   "engines": {
     "npm": ">=7.0.0",
     "node": ">=16.0.0"
