@@ -3,7 +3,7 @@
 /* eslint-disable no-return-assign */
 import cheerio from 'cheerio'
 
-import { getLinkToNewPageFile } from './utilities'
+import { getLinkToNewPageFile } from './utilities.js'
 
 /**
  * Removes element by selector and leaves only its text content

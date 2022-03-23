@@ -3,9 +3,14 @@ import { promises as fsPromises } from 'fs'
 import { join } from 'path'
 import { promisify } from 'util'
 
-import { createListFromArray, getHtml } from './mdFormatter'
-import pageBuilder from './pageBuilder'
-import { copyAssets, getDirname, isFile, readDirRecursive } from './utilities'
+import { createListFromArray, getHtml } from './mdFormatter.js'
+import pageBuilder from './pageBuilder.js'
+import {
+  copyAssets,
+  getDirname,
+  isFile,
+  readDirRecursive,
+} from './utilities.js'
 
 const execAsync = promisify(exec)
 
@@ -95,13 +100,8 @@ const convert = async (dirIn, dirOut) => {
   const filePaths = readDirRecursive(dirIn)
 
   const pages = filePaths
-    .filter(filePath => {
-      return filePath.endsWith('.html')
-    })
-    .map(filePath => {
-      return pageBuilder(filePath)
-    })
-
+    .filter(filePath => filePath.endsWith('.html'))
+    .map(filePath => pageBuilder(filePath))
 
   const indexHtmlFiles = []
   pages.forEach(page => {

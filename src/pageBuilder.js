@@ -14,13 +14,13 @@ import {
   getRightContentByFileName,
   load,
   removeArbitraryElements,
-} from './mdFormatter'
+} from './mdFormatter.js'
 import {
   getBasename,
   getDirname,
   readFile,
   sanitizeFilename,
-} from './utilities'
+} from './utilities.js'
 
 const getSpacePath = (space, fileNameNew) =>
   `../${sanitizeFilename(space)}/${fileNameNew}`
