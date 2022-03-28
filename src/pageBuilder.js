@@ -54,7 +54,7 @@ const pageBuilder = fullPath => {
 
   const spacePath = getSpacePath(space, fileNameNew)
 
-  const getTextToConvert = (pages) => {
+  const getTextToConvert = pages => {
     let pageContent = getRightContentByFileName(contentIn, fileName)
     pageContent = fixHeadline(pageContent)
     pageContent = fixIcon(pageContent)

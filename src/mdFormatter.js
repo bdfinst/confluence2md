@@ -66,10 +66,16 @@ export const getRightContentByFileName = (content, fileName) => {
 export const fixHeadline = content =>
   removeElementLeaveText(content, 'span.aui-icon')
 
+/**
+ * Removes span inside of a h1 tag.
+ * @param {cheerio obj} content Content of a file
+ * @return {cheerio obj} Cheerio object
+ */
 export const addPageHeading = (content, headingText) => {
   const $ = cheerio
   const h1 = $('<h1>').text(headingText)
   content.first().prepend(h1)
+
   return content
 }
 
@@ -217,7 +223,7 @@ export const fixLocalLinks = (content, space, pages) => {
       if (href === undefined) {
         text = $(el).text()
         $(el).replaceWith(text)
-        return console.debug('No href for link with text "#{text}"')
+        return console.error('No href for link with text "#{text}"')
       }
       if ($(el).hasClass('createlink')) {
         return $(el).replaceWith($(el).text())

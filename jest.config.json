@@ -1,6 +1,7 @@
 {
   "testRegex": "((\\.|/*.)(test))\\.js?$",
   "testEnvironment": "node",
+  "transform": {},
   "testPathIgnorePatterns": ["/node_modules/", "./dist"],
   "coverageReporters": ["lcov", "html", "text"],
   "coverageThreshold": {

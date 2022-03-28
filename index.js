@@ -25,4 +25,8 @@ const toPath = path.resolve(pathResult)
 const frontmatterUsed = frontmatter ? '\nAdding frontmatter' : ''
 console.log(`Converting ${fromPath}\nDestination: ${toPath} ${frontmatterUsed}`)
 
-convert(fromPath, toPath, frontmatter)
+try {
+  convert(fromPath, toPath, frontmatter)
+} catch (err) {
+  console.log(err)
+}

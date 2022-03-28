@@ -37,11 +37,23 @@ export const isDir = (dirPath, cwd = '') => {
  */
 export const readDirRecursive = (fromPath, filesOnly = true) => {
   const fullPaths = []
+  let files
+
   if (isFile(fromPath)) {
     return [fromPath]
   }
 
-  fs.readdirSync(fromPath).forEach(fileName => {
+  try {
+    files = fs.readdirSync(fromPath)
+  } catch (err) {
+    let msg
+    if (err.code === 'ENOENT') {
+      msg = `Path not found: ${fromPath}`
+    }
+    throw new Error(msg)
+  }
+
+  files.forEach(fileName => {
     const fullPath = path.join(fromPath, fileName)
     if (isFile(fullPath)) {
       fullPaths.push(fullPath)
@@ -138,4 +150,9 @@ export const copyAssets = (pathWithHtmlFiles, dirOut) => {
     }
   })
   return result
+}
+
+export const buildFrontmatter = h1Title => {
+  const title = h1Title ? h1Title.split('# ')[1] : undefined
+  return title ? `---\ntitle: "${title}"\n---\n` : ''
 }

@@ -37,9 +37,9 @@
     "jest": "^27.5.1"
   },
   "scripts": {
-    "start": "node --es-module-specifier-resolution=node ./src/index.js",
-    "test": "jest --runInBand --coverage --config ./jest.config.json",
-    "test:ci": "jest  --config ./jest.config.json --watch",
+    "start": "node --es-module-specifier-resolution=node ./index.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand --coverage --config ./jest.config.json",
+    "test:ci": "NODE_OPTIONS=--experimental-vm-modules jest  --config ./jest.config.json --watch",
     "format:fix": "prettier --write '**/*.{js,yaml,json,md}'",
     "format": "prettier --check '**/*.{js,yaml,json,md}'",
     "lint:fix": "eslint --fix --cache --ext .js .",

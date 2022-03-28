@@ -6,6 +6,7 @@ import { promisify } from 'util'
 import { createListFromArray, getHtml } from './mdFormatter.js'
 import pageBuilder from './pageBuilder.js'
 import {
+  buildFrontmatter,
   copyAssets,
   getDirname,
   isFile,
@@ -16,8 +17,8 @@ const execAsync = promisify(exec)
 
 // @link http://hackage.haskell.org/package/pandoc For options description
 const outputTypesAdd = [
-  'markdown_github', // use GitHub markdown variant
-  'blank_before_header', // insert blank line before header
+  'gfm', // use GitHub markdown variant
+  // 'blank_before_header', // insert blank line before header
   //    'mmd_link_attributes' # use MD syntax for images and links instead of HTML
   //    'link_attributes' # use MD syntax for images and links instead of HTML
 ]
@@ -52,14 +53,22 @@ const writeMarkdownFile = async (text, fullOutFileName) => {
 
   const tempInputFile = `${fullOutFileName}~`
   await fsPromises.writeFile(tempInputFile, text, { flag: 'w' })
-  const command =
-    `pandoc -f html ${pandocOptions} -o "${fullOutFileName}"` +
-    ` "${tempInputFile}"`
-  const out = await execAsync(command, { cwd: fullOutDirName })
-  if (out.status > 0) {
-    console.error(out.stderr)
+  // const command =
+  //   `pandoc -f html ${pandocOptions} -o "${fullOutFileName}" "${tempInputFile}"`
+  const command = `pandoc -f html ${pandocOptions} "${tempInputFile}"`
+  const { stdout, stderr } = await execAsync(command, { cwd: fullOutDirName })
+  const lines = stdout.split('\n')
+  const title = lines.find(el => el.match(/^#\s/m))
+
+  const page = `${buildFrontmatter(title)}\n${lines.join('\n')}`
+
+  console.log(page)
+
+  if (stderr.length > 0) {
+    console.error(stderr)
   }
-  return fsPromises.unlink(tempInputFile)
+  fsPromises.unlink(tempInputFile)
+  fsPromises.writeFile(fullOutFileName, page, { flag: 'w' })
 }
 
 /**
@@ -79,10 +88,8 @@ const writeGlobalIndexFile = async (indexHtmlFiles, dirOut) => {
  * @param {string} dirOut Directory where to place converted MD files
  */
 const convertPage = async (page, dirOut, pages) => {
-  console.log(page)
   console.log(`Parsing ... ${page.path}`)
   const text = page.getTextToConvert(pages)
-  console.log(page)
   const fullOutFileName = join(dirOut, page.space, page.fileNameNew)
 
   console.log(`Making Markdown ... ${fullOutFileName}`)
