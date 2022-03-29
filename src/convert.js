@@ -18,9 +18,6 @@ const execAsync = promisify(exec)
 // @link http://hackage.haskell.org/package/pandoc For options description
 const outputTypesAdd = [
   'gfm', // use GitHub markdown variant
-  // 'blank_before_header', // insert blank line before header
-  //    'mmd_link_attributes' # use MD syntax for images and links instead of HTML
-  //    'link_attributes' # use MD syntax for images and links instead of HTML
 ]
 
 const extraOptions = [
@@ -53,16 +50,13 @@ const writeMarkdownFile = async (text, fullOutFileName) => {
 
   const tempInputFile = `${fullOutFileName}~`
   await fsPromises.writeFile(tempInputFile, text, { flag: 'w' })
-  // const command =
-  //   `pandoc -f html ${pandocOptions} -o "${fullOutFileName}" "${tempInputFile}"`
+
   const command = `pandoc -f html ${pandocOptions} "${tempInputFile}"`
   const { stdout, stderr } = await execAsync(command, { cwd: fullOutDirName })
   const lines = stdout.split('\n')
   const title = lines.find(el => el.match(/^#\s/m))
 
   const page = `${buildFrontmatter(title)}\n${lines.join('\n')}`
-
-  console.log(page)
 
   if (stderr.length > 0) {
     console.error(stderr)

@@ -154,5 +154,6 @@ export const copyAssets = (pathWithHtmlFiles, dirOut) => {
 
 export const buildFrontmatter = h1Title => {
   const title = h1Title ? h1Title.split('# ')[1] : undefined
-  return title ? `---\ntitle: "${title}"\n---\n` : ''
+
+  return title ? `---\ntitle: "${title}"\ntype: docs\n---\n` : ''
 }

@@ -7,10 +7,11 @@ it('should return an error if the `from` path is not a directory', () => {
   }).toThrow()
 })
 
-it('should build frontmatter', () => {
-  const title = '# P1H (Platform One - Holocron)'
+it('should add frontmatter with title and type property', () => {
+  const title = '# Page Title'
   const result = buildFrontmatter(title)
-  const expected = '---\ntitle: "P1H (Platform One - Holocron)"\n---\n'
+  const expected = '---\ntitle: "Page Title"\ntype: docs\n---\n'
+
   expect(result).toEqual(expected)
 })
 
