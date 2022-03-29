@@ -1,5 +1,7 @@
 /* eslint-disable no-useless-escape */
 /* eslint-disable consistent-return */
+
+import { execSync } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 
@@ -156,4 +158,13 @@ export const buildFrontmatter = h1Title => {
   const title = h1Title ? h1Title.split('# ')[1] : undefined
 
   return title ? `---\ntitle: "${title}"\ntype: docs\n---\n` : ''
+}
+
+export const formatMarkdown = (text, addFrontmatter = false) => {
+  const lines = text.split('\n')
+  const title = lines.find(el => el.match(/^#\s/m))
+
+  const frontmatter = addFrontmatter ? `${buildFrontmatter(title)}\n` : ''
+
+  return `${frontmatter}${lines.join('\n')}`
 }

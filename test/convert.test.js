@@ -1,4 +1,8 @@
-import { buildFrontmatter, readDirRecursive } from '../src/utilities.js'
+import {
+  buildFrontmatter,
+  formatMarkdown,
+  readDirRecursive,
+} from '../src/utilities.js'
 
 it('should return an error if the `from` path is not a directory', () => {
   const path = './NO_PATH'
@@ -29,17 +33,18 @@ it('should return an empty string if there is no title', () => {
   expect(result).toEqual(expected)
 })
 
-// it('should return a list of HTML files if it is a valid path', () => {
-//   const path = 'test/assets/page1'
-//   const files = getPages(path)
+it('should add frontmatter if the `-f` flag is given', () => {
+  const text =
+    '# Postmortem 2021-11-01\n\n# Summary\n\nOn Friday 10/31 a planned outage occurred at 7:30 AM Central time to'
 
-//   expect(Array.isArray(files)).toEqual(true)
-//   expect(files).toHaveLength(5)
-// })
+  const result = formatMarkdown(text, true).split('---')
+  expect(result[1]).toEqual('\ntitle: "Postmortem 2021-11-01"\ntype: docs\n')
+})
 
-// it('should return a converted page', () => {
-//   const path = 'test/assets/remote-image.html'
-//   const files = convert(path)
+it('should exclude frontmatter if the `-f` flag is not given', () => {
+  const text =
+    '# Postmortem 2021-11-01\n\n# Summary\n\nOn Friday 10/31 a planned outage occurred at 7:30 AM Central time to'
 
-//   expect(files).toHaveLength(5)
-// })
+  const result = formatMarkdown(text, false).split('#')
+  expect(result[1]).toEqual(' Postmortem 2021-11-01\n\n')
+})

@@ -6,8 +6,8 @@ import { promisify } from 'util'
 import { createListFromArray, getHtml } from './mdFormatter.js'
 import pageBuilder from './pageBuilder.js'
 import {
-  buildFrontmatter,
   copyAssets,
+  formatMarkdown,
   getDirname,
   isFile,
   readDirRecursive,
@@ -15,30 +15,16 @@ import {
 
 const execAsync = promisify(exec)
 
-// @link http://hackage.haskell.org/package/pandoc For options description
-const outputTypesAdd = [
-  'gfm', // use GitHub markdown variant
-]
-
-const extraOptions = [
-  '--markdown-headings=atx', // Setext-style headers (underlined) | ATX-style headers (prefixed with hashes)
-]
-
 /**
  * @param {string} text Markdown content of file
  * @param {string} fullOutFileName Absolute path to resulting file
  * @return {string} Absolute path to created MD file
  */
-const writeMarkdownFile = async (text, fullOutFileName) => {
-  const typesAdd = outputTypesAdd.join('+')
-  let typesRemove = [].join('-')
-  typesRemove = typesRemove ? `-${typesRemove}` : ''
-  const types = typesAdd + typesRemove
-  const pandocOptions = [
-    types ? `-t ${types}` : '',
-    extraOptions.join(' '),
-  ].join(' ')
-
+const writeMarkdownFile = async (
+  text,
+  fullOutFileName,
+  addFrontmatter = false,
+) => {
   const fullOutDirName = getDirname(fullOutFileName)
 
   try {
@@ -51,29 +37,40 @@ const writeMarkdownFile = async (text, fullOutFileName) => {
   const tempInputFile = `${fullOutFileName}~`
   await fsPromises.writeFile(tempInputFile, text, { flag: 'w' })
 
-  const command = `pandoc -f html ${pandocOptions} "${tempInputFile}"`
+  /*
+   *  @link http://hackage.haskell.org/package/pandoc For options description
+   * 'gfm': use GitHub markdown variant
+   * '--markdown-headings=atx': Setext-style headers (underlined) | ATX-style headers (prefixed with hashes)
+   */
+  const command = `pandoc -f html -t gfm --markdown-headings=atx "${tempInputFile}"`
   const { stdout, stderr } = await execAsync(command, { cwd: fullOutDirName })
-  const lines = stdout.split('\n')
-  const title = lines.find(el => el.match(/^#\s/m))
 
-  const page = `${buildFrontmatter(title)}\n${lines.join('\n')}`
+  fsPromises.unlink(tempInputFile)
 
   if (stderr.length > 0) {
     console.error(stderr)
+  } else {
+    fsPromises.writeFile(
+      fullOutFileName,
+      formatMarkdown(stdout, addFrontmatter),
+      { flag: 'w' },
+    )
   }
-  fsPromises.unlink(tempInputFile)
-  fsPromises.writeFile(fullOutFileName, page, { flag: 'w' })
 }
 
 /**
  * @param {array} indexHtmlFiles Relative paths of index.html files from all parsed Confluence spaces
  * @param {string} dirOut Absolute path to a directory where to place converted MD files
  */
-const writeGlobalIndexFile = async (indexHtmlFiles, dirOut) => {
+const writeGlobalIndexFile = async (
+  indexHtmlFiles,
+  dirOut,
+  addFrontmatter = false,
+) => {
   const globalIndex = join(dirOut, 'index.md')
   const $content = createListFromArray(indexHtmlFiles)
   const text = getHtml($content)
-  return writeMarkdownFile(text, globalIndex)
+  return writeMarkdownFile(text, globalIndex, addFrontmatter)
 }
 
 /**
@@ -97,7 +94,7 @@ const convertPage = async (page, dirOut, pages) => {
  * @param {string} dirIn Directory to go through
  * @param {string} dirOut Directory where to place converted MD files
  */
-const convert = async (dirIn, dirOut) => {
+const convert = async (dirIn, dirOut, addFrontmatter = false) => {
   const filePaths = readDirRecursive(dirIn)
 
   const pages = filePaths
@@ -114,7 +111,7 @@ const convert = async (dirIn, dirOut) => {
   })
 
   if (!isFile(dirIn)) {
-    await writeGlobalIndexFile(indexHtmlFiles, dirOut)
+    await writeGlobalIndexFile(indexHtmlFiles, dirOut, addFrontmatter)
   }
   return console.log('Conversion done')
 }
