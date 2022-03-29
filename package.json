@@ -43,7 +43,7 @@
     "format:fix": "prettier --write '**/*.{js,yaml,json,md}'",
     "format": "prettier --check '**/*.{js,yaml,json,md}'",
     "lint:fix": "eslint --fix --cache --ext .js .",
-    "lint:local": "concurrently 'npm run lint:fix' 'npm run format:fix'",
-    "lint": "concurrently 'eslint --ext .js .' 'npm run format'"
+    "lint": "concurrently 'npm run lint:fix' 'npm run format:fix'",
+    "lint:check": "concurrently 'eslint --ext .js .' 'npm run format'"
   }
 }
