@@ -4,7 +4,7 @@
   "author": "Bryan Finster",
   "license": "MIT",
   "type": "module",
-  "description": "Convert Confluence Pages to Markdown",
+  "description": "Convert Confluence pages to markdown for Hugo",
   "keywords": [
     "Confluence",
     "Markdown",

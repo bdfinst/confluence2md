@@ -1,12 +1,13 @@
 # Confluence to Markdown converter
 
 Forked from [confluence-to-markdown](https://github.com/meridius/confluence-to-markdown) and updated to ES from CoffeeScript
+Tests are still WIP
 
-Convert [Confluence HTML export](#conflhowto) to Markdown with optional frontmatter for static site generation
+Convert [Confluence HTML export](#conflhowto) to markdown with optional frontmatter for static site generators
 
 ## Dependencies
 
-The [pandoc] command line tool must be installed. Check it by running:
+Install the [pandoc] command line tool
 
 ```bash
 pandoc --version
