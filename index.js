@@ -26,7 +26,8 @@ const frontmatterUsed = frontmatter ? '\nAdding frontmatter' : ''
 console.log(`Converting ${fromPath}\nDestination: ${toPath} ${frontmatterUsed}`)
 
 try {
-  convert(fromPath, toPath, frontmatter)
+  // convert(fromPath, toPath, frontmatter)
+  convert(fromPath, toPath, true)
 } catch (err) {
   console.log(err)
 }

@@ -23,9 +23,11 @@ const execAsync = promisify(exec)
 const writeMarkdownFile = async (
   text,
   fullOutFileName,
-  addFrontmatter = false,
+  addFrontmatter = true,
 ) => {
   const fullOutDirName = getDirname(fullOutFileName)
+
+  console.log('writeMarkdownFile', addFrontmatter)
 
   try {
     await fsPromises.mkdir(fullOutDirName, { recursive: true })
@@ -65,7 +67,7 @@ const writeMarkdownFile = async (
 const writeGlobalIndexFile = async (
   indexHtmlFiles,
   dirOut,
-  addFrontmatter = false,
+  addFrontmatter = true,
 ) => {
   const globalIndex = join(dirOut, 'index.md')
   const $content = createListFromArray(indexHtmlFiles)
@@ -94,7 +96,7 @@ const convertPage = async (page, dirOut, pages) => {
  * @param {string} dirIn Directory to go through
  * @param {string} dirOut Directory where to place converted MD files
  */
-const convert = async (dirIn, dirOut, addFrontmatter = false) => {
+const convert = async (dirIn, dirOut, addFrontmatter = true) => {
   const filePaths = readDirRecursive(dirIn)
 
   const pages = filePaths
