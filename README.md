@@ -21,10 +21,20 @@ Install all project dependencies:
 npm ci
 ```
 
-To convert an exported Confluence space:
+To see the CLI options, execute `confluence-to-md`
 
 ```bash
-npm start <pathResource> <pathResult>
+Usage: confluence-to-markdown [options] <sourcePath> <outputPath>
+
+CLI to convert Confluence HTML to mardown for static sites
+
+Arguments:
+  sourcePath         Path to exported Confluence HTML
+  outputPath         Path to write markdown
+
+Options:
+  -f, --frontmatter  Add frontmatter for static site generators
+  -h, --help         display help for command
 ```
 
 ### Parameters
