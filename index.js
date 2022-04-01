@@ -18,8 +18,6 @@ if (process.argv.length < 3) {
   program.help()
 }
 
-console.log(process.argv.length)
-
 program.parse()
 
 const options = program.opts()
@@ -36,7 +34,7 @@ console.log(`Converting ${fromPath}\nDestination: ${toPath} ${frontmatterUsed}`)
 
 try {
   // convert(fromPath, toPath, frontmatter)
-  convert(fromPath, toPath, true)
+  convert(fromPath, toPath, frontmatter)
 } catch (err) {
   console.log(err)
 }

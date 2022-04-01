@@ -160,15 +160,11 @@ export const buildFrontmatter = h1Title => {
   return title ? `---\ntitle: "${title}"\ntype: docs\n---\n` : ''
 }
 
-export const formatMarkdown = (text, addFrontmatter = true) => {
+export const formatMarkdown = (text, addFrontmatter) => {
   const lines = text.split('\n')
   const title = lines.find(el => el.match(/^#\s/m))
 
-  console.log(addFrontmatter)
-
   const frontmatter = addFrontmatter ? `${buildFrontmatter(title)}\n` : ''
-
-  console.log(frontmatter)
 
   return `${frontmatter}${lines.join('\n')}`
 }

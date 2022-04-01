@@ -20,14 +20,8 @@ const execAsync = promisify(exec)
  * @param {string} fullOutFileName Absolute path to resulting file
  * @return {string} Absolute path to created MD file
  */
-const writeMarkdownFile = async (
-  text,
-  fullOutFileName,
-  addFrontmatter = true,
-) => {
+const writeMarkdownFile = async (text, fullOutFileName, addFrontmatter) => {
   const fullOutDirName = getDirname(fullOutFileName)
-
-  console.log('writeMarkdownFile', addFrontmatter)
 
   try {
     await fsPromises.mkdir(fullOutDirName, { recursive: true })
@@ -80,15 +74,15 @@ const writeGlobalIndexFile = async (
  * @param {Page} page Page entity of HTML file
  * @param {string} dirOut Directory where to place converted MD files
  */
-const convertPage = async (page, dirOut, pages) => {
+const convertPage = async (page, dirOut, pages, addFrontmatter) => {
   console.log(`Parsing ... ${page.path}`)
   const text = page.getTextToConvert(pages)
   const fullOutFileName = join(dirOut, page.space, page.fileNameNew)
 
   console.log(`Making Markdown ... ${fullOutFileName}`)
-  await writeMarkdownFile(text, fullOutFileName)
+  await writeMarkdownFile(text, fullOutFileName, addFrontmatter)
   copyAssets(getDirname(page.path), getDirname(fullOutFileName))
-  return console.log('Done\n')
+  console.log('Done\n')
 }
 
 /**
@@ -96,7 +90,7 @@ const convertPage = async (page, dirOut, pages) => {
  * @param {string} dirIn Directory to go through
  * @param {string} dirOut Directory where to place converted MD files
  */
-const convert = async (dirIn, dirOut, addFrontmatter = true) => {
+const convert = async (dirIn, dirOut, addFrontmatter) => {
   const filePaths = readDirRecursive(dirIn)
 
   const pages = filePaths
@@ -109,7 +103,7 @@ const convert = async (dirIn, dirOut, addFrontmatter = true) => {
       indexHtmlFiles.push(join(page.space, 'index'))
     }
 
-    return convertPage(page, dirOut, pages)
+    return convertPage(page, dirOut, pages, addFrontmatter)
   })
 
   if (!isFile(dirIn)) {
