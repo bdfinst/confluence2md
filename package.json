@@ -11,6 +11,9 @@
     "Confluence to Markdown"
   ],
   "main": "index.js",
+  "bin": {
+    "confluence-to-md": "./index.js"
+  },
   "repository": "git@github.com:bdfinst/confluence-to-md.git",
   "engines": {
     "npm": ">=7.0.0",
@@ -44,6 +47,7 @@
     "format": "prettier --check '**/*.{js,yaml,json,md}'",
     "lint:fix": "eslint --fix --cache --ext .js .",
     "lint": "concurrently 'npm run lint:fix' 'npm run format:fix'",
-    "lint:check": "concurrently 'eslint --ext .js .' 'npm run format'"
+    "lint:check": "concurrently 'eslint --ext .js .' 'npm run format'",
+    "postinstall": "npm link"
   }
 }

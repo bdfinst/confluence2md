@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+/* eslint-disable node/shebang */
+
 import path from 'path'
 
 import { program } from 'commander'
@@ -10,6 +13,12 @@ program
   .argument('<sourcePath>', 'Path to exported Confluence HTML')
   .argument('<outputPath>', 'Path to write markdown')
   .option('-f, --frontmatter', 'Add frontmatter for static site generators')
+
+if (process.argv.length < 3) {
+  program.help()
+}
+
+console.log(process.argv.length)
 
 program.parse()
 
