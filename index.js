@@ -8,7 +8,7 @@ import { program } from 'commander'
 import convert from './src/convert.js'
 
 program
-  .name('confluence-to-markdown')
+  .name('confluence2md')
   .description('CLI to convert Confluence HTML to mardown for static sites')
   .argument('<sourcePath>', 'Path to exported Confluence HTML')
   .argument('<outputPath>', 'Path to write markdown')

@@ -1,5 +1,5 @@
 {
-  "name": "@bfinster/confluence-to-md",
+  "name": "@bfinster/confluence2md",
   "version": "1.0.0",
   "author": "Bryan Finster",
   "license": "MIT",
@@ -14,7 +14,7 @@
   "bin": {
     "confluence2md": "./index.js"
   },
-  "repository": "git@github.com:bdfinst/confluence-to-md.git",
+  "repository": "git@github.com:bdfinst/confluence2md.git",
   "engines": {
     "npm": ">=7.0.0",
     "node": ">=16.0.0"

@@ -21,10 +21,10 @@ Install all project dependencies:
 npm ci
 ```
 
-To see the CLI options, execute `confluence-to-md`
+To see the CLI options, execute `confluence2md`
 
 ```bash
-Usage: confluence-to-markdown [options] <sourcePath> <outputPath>
+Usage: confluence2md [options] <sourcePath> <outputPath>
 
 CLI to convert Confluence HTML to mardown for static sites
 
